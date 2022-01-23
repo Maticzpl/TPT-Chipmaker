@@ -1,4 +1,15 @@
+-- Thanks LBPhacker for fixing this :P
 function MaticzplChipmaker.getColorForString(color)
+    local function handle_nono_zone(chr)
+        chr = string.char(chr)
+
+        local byte = chr:byte()
+        if byte < 0x80 then
+            return chr
+        end
+        return string.char(bit.bor(0xC0, bit.rshift(byte, 6)), bit.bor(0x80, bit.band(byte, 0x3F)))
+    end
+
     local hex = string.format("%x", color)
     --12345678
     --aarrggbb
@@ -15,73 +26,26 @@ function MaticzplChipmaker.getColorForString(color)
         b = tonumber(string.sub(hex,7,8),16)
     end    
     
-    if r == 0 or r == nil then
-        r = 1
+    if r == 0 or string.char(r) == '\n' then
+        r = r + 1
     end
-    if g == 0 or g == nil then
-        g = 1
+    if g == 0 or string.char(g) == '\n' then
+        g = g + 1
     end
-    if b == 0 or b == nil then
-        b = 1
+    if b == 0 or string.char(b) == '\n' then
+        b = b + 1
     end
     
-    if string.char(r) == "\n" then
-        r = r - 1
-    end
-    if string.char(g) == "\n" then
-        g = g - 1
-    end
-    if string.char(b) == "\n" then
-        b = b - 1
-    end
-
-    -- Avoid UTF-8 encoding those into 1 char
-    if r >= 0xC2 and r <= 0xDF and g < 0xC0 then --For RG bytes
-        local newR
-        local rChange
-        if r >= 0xD0 then
-            newR = 0xE0
-            rChange = 0xE0 - r
-        else
-            newR = 0xC1
-            rChange = r  - 0xC1
-        end
-        local newG = 0xC0
-        local gChange = 0xC0 - g
-
-        if gChange > rChange then
-            g = newG
-        else
-            r = newR
-        end
-    end
-    if g >= 0xC2 and g <= 0xDF and b < 0xC0 then --For GB bytes
-        local newG
-        local gChange
-        if g >= 0xD0 then
-            newG = 0xE0
-            gChange = 0xE0 - g
-        else
-            newG = 0xC1
-            gChange = g  - 0xC1
-        end
-        local newB = 0xC0
-        local bChange = 0xC0 - b
-
-        if bChange > gChange then
-            b = newB
-        else
-            g = newG
-        end
-    end
-
     if r + g + b < 100 then --If too dark bright it up
         local adjustement = (180 - math.max(r,g,b)) / 3
         r = r + adjustement
         g = g + adjustement
         b = b + adjustement
     end
-    return "\x0F"..string.char(r,g,b)
+    r = handle_nono_zone(r)
+    g = handle_nono_zone(g)
+    b = handle_nono_zone(b)
+    return "\x0F"..r..g..b
 
 end
 
@@ -221,94 +185,27 @@ function MaticzplChipmaker.GetAllPartsInPos(x,y)
     return result
 end
 
-function MaticzplChipmaker.StackTool.Stack()
-    local s = cMaker.StackTool
-    
-    local partsMoved = 0
-    
-    -- REORDER PARTICLES HERE
-    
-    local xDirection = 1
-    if s.rectStart.x > s.rectEnd.x then
-        xDirection = -1
-    end
-    
-    local yDirection = 1
-    if s.rectStart.y > s.rectEnd.y then
-        yDirection = -1
-    end
-    
-    for x =     s.rectStart.x, s.rectEnd.x, xDirection do
-        for y = s.rectStart.y, s.rectEnd.y, yDirection do
-            local parts = cMaker.GetAllPartsInPos(x,y)
-            
-            for i,part in pairs(parts) do
-                if part ~= nil then
-                    if x ~= s.rectEnd.x and y ~= s.rectEnd.y then   --count every particle except the ones that got already stacked
-                        partsMoved = partsMoved + 1
-                    elseif partsMoved < #parts then
-                        partsMoved = partsMoved + 1
-                    end
-                end
-                
-                
-                sim.partProperty(part,"x",s.rectEnd.x)
-                sim.partProperty(part,"y",s.rectEnd.y)
-            end
-        end
-    end
-    
-    if partsMoved > 5 then
-        print("Warning: More than 5 particles stacked")
-        tpt.set_pause(1)
-    end
-    
+function MaticzplChipmaker.DrawModeText(text)
+    graphics.fillRect(0,0,sim.XRES,sim.YRES,0,0,0,128)
+    graphics.drawText(15,360,text,252, 232, 3)
 end
 
-function MaticzplChipmaker.StackTool.Unstack()
-    local s = cMaker.StackTool
-    -- rectStart == rectEnd
-    
-    local parts = cMaker.GetAllPartsInPos(s.rectStart.x,s.rectStart.y)
-    
-    -- Check if space is free
-    local collision = false
-    local xOffset = 0
-    local yOffset = 0 
-    for i,part in pairs(parts) do
-        local posX = s.rectStart.x + xOffset
-        local posY = s.rectStart.y + yOffset
+function MaticzplChipmaker.DisableAllModes()
+    if cMaker.StackTool.isInStackMode then       
+        cMaker.StackTool.DisableStackMode(); 
+        return false
+    end
+    if cMaker.ConfigTool.inConfigMode then      
+        cMaker.ConfigTool.DisableConfigMode();
+        return false
+    end
+    if cMaker.StackEdit.isInStackEditMode then      
+        cMaker.StackEdit.DisableStackEditMode();
+        return false
+    end
+    return true
+end
 
-        local inPos = simulation.partID(posX,posY)
-        if ( inPos ~= nil and i ~= 1 ) or 
-         (posX > 607) or (posY > 379) or (posX < 4) or (posY < 4) then
-            collision = true
-            break
-        end
-        
-        yOffset = yOffset + 1
-        if yOffset >= cMaker.Settings.unstackHeight then
-            xOffset = xOffset + 1
-            yOffset = 0
-        end
-    end
-    
-    if collision then
-        print("Not enough space to unstack")
-    else
-        xOffset = 0
-        yOffset = 0 
-        for i,part in pairs(parts) do
-            sim.partProperty(part,"y",s.rectStart.y + yOffset)
-            sim.partProperty(part,"x",s.rectStart.x + xOffset)
-           
-        
-            yOffset = yOffset + 1
-            if yOffset >= cMaker.Settings.unstackHeight then
-                xOffset = xOffset + 1
-                yOffset = 0
-            end
-        end
-    end
-    
+function MaticzplChipmaker.ReorderParticles()
+    -- TODO: Implement this 
 end

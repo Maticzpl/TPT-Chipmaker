@@ -34,6 +34,7 @@ MaticzplChipmaker =
         rectEnd = {x = 0, y = 0},
     },
     StackEdit = {
+        isInStackEditMode = false,
         stackPos = 0,
         selected = -1,
         mouseCaptured = false,
@@ -53,57 +54,18 @@ MaticzplChipmaker =
 local cMaker = MaticzplChipmaker
 
 
-function MaticzplChipmaker.OnKey(key,scan,_repeat,shift,ctrl,alt) -- 99 is c 115 is s
-    if key == 115 and shift and not ctrl and not alt and not _repeat then -- SHIFT + S
-        cMaker.StackTool.isInStackMode = true
-
-        cMaker.ConfigTool.target = -1
-        cMaker.ConfigTool.inConfigMode = false
-        return false
-    end
-    
+function MaticzplChipmaker.OnKey(key,scan,_repeat,shift,ctrl,alt) -- 99 is c 115 is s    
     if key == 27 then   -- ESCAPE
-        if cMaker.StackTool.isInStackMode then
-            cMaker.StackTool.mouseDown = false            
-            cMaker.StackTool.isInStackMode = false            
+        if not cMaker.DisableAllModes() then
             return false
         end
-    end
-
-    --Stack pos controls
-    if key == 1073741899 and not shift and not ctrl and not alt then    -- PageUp
-        --local prevPos = cMaker.StackEdit.stackPos
-        cMaker.StackEdit.stackPos = cMaker.StackEdit.stackPos + 1
-
-        -- if cMaker.StackEdit.stackPos ~= 0 and prevPos == 0 and tpt.set_pause() == 0 then
-        --     tpt.set_pause(1)
-        --     print("Entered stack edit mode, the game is now paused.")
-        -- end
-        return false
-    end
-    if key == 1073741902 and not shift and not ctrl and not alt then    -- PageDown        
-        if cMaker.StackEdit.stackPos > 0 then
-            cMaker.StackEdit.stackPos = cMaker.StackEdit.stackPos - 1
-            return false
-        end             
-    end
-    if key == 1073741898 and not shift and not ctrl and not alt and not _repeat then    -- Home        
-        cMaker.StackEdit.stackPos = 0
-        return false
-    end
+    end     
 
     if key == 1073741882 and shift and not ctrl and not alt and not _repeat  then -- Shift + F1
         cMaker.openSettings()        
         return false    
     end
 
-    if key == 99 and not shift and not ctrl and not alt and not _repeat  then   -- C
-        cMaker.ConfigTool.inConfigMode = true
-
-        cMaker.StackTool.mouseDown = false            
-        cMaker.StackTool.isInStackMode = false           
-        return false    
-    end
 
     if key == 59 and not ctrl and not _repeat then -- ; semicolon for replacemode
         cMaker.replaceMode = (not cMaker.replaceMode)
@@ -118,127 +80,15 @@ function MaticzplChipmaker.OnKey(key,scan,_repeat,shift,ctrl,alt) -- 99 is c 115
 end
 
 function MaticzplChipmaker.OnMouseDown(x,y,button)
-    if button == 3 then
-        cMaker.StackTool.isInStackMode = false
-
-        cMaker.ConfigTool.target = -1
-        cMaker.ConfigTool.inConfigMode = false
-    end
-    
-    if cMaker.StackTool.isInStackMode and button == 1 then
-        cMaker.StackTool.mouseDown = true
-        cMaker.StackTool.realStart = {x=x,y=y}
-        x, y = simulation.adjustCoords(x,y)        
-        
-        cMaker.StackTool.rectStart = {x = x,y = y}
-        return false
-    else
-        if cMaker.StackEdit.selected > 0 and cMaker.StackEdit.mouseReleased then    
-            local cancel = not cMaker.HandleStackEdit(button)
-            if cancel then
-                cMaker.StackEdit.mouseCaptured = true
-                cMaker.StackEdit.mouseReleased = false                                
-                cMaker.StackEdit.selected = -1    
-                return false
-            else
-                cMaker.StackEdit.mouseCaptured = false
-            end
-        else
-            cMaker.StackEdit.mouseCaptured = false
-            cMaker.StackEdit.mouseReleased = true
+    if button == 3 then -- RMB
+        if not cMaker.DisableAllModes() then
+            return false
         end
-    end
-
-    if cMaker.StackEdit.mouseCaptured and (not cMaker.StackEdit.mouseReleased) then
-        return false
-    end
-end
-
-function MaticzplChipmaker.OnMouseUp(x,y,button,reason)
-    if cMaker.StackEdit.mouseCaptured then
-        cMaker.StackEdit.mouseReleased = true
-        return false        
-    end
-
-    if cMaker.StackTool.isInStackMode and button == 1 then
-        cMaker.StackTool.mouseDown = false
-        cMaker.StackTool.realEnd = {x=x,y=y}
-        x, y = simulation.adjustCoords(x,y)
-        
-        cMaker.StackTool.rectEnd = {x = x,y = y}
-        
-        if cMaker.StackTool.rectEnd.x == cMaker.StackTool.rectStart.x and
-        cMaker.StackTool.rectEnd.y == cMaker.StackTool.rectStart.y then
-            cMaker.StackTool.Unstack()
-        else
-            cMaker.StackTool.Stack()
-        end
-        
-        cMaker.StackTool.isInStackMode = false        
-        return false
-    end
-
-    if cMaker.ConfigTool.inConfigMode then        
-        cMaker.ConfigTool.target = sim.partID(x,y)
-        return false
     end
 end
 
 function MaticzplChipmaker.OnMouseMove(x,y,dx,dy)
     cMaker.CursorPos = {x = x, y = y}
-end
-
-function MaticzplChipmaker.HandleStackEdit(button)
-    --tpt.selectedl  left   1
-    --tpt.selecteda  middle 2
-    --tpt.selectedr  right  3  
-    local select = nil
-
-    if button == 1 then
-        select = tpt.selectedl
-    else
-        if button == 3 then
-            select = tpt.selectedr
-        else
-            select = tpt.selecteda
-        end              
-    end            
-    
-    -- Handle Tools
-    if select == "DEFAULT_UI_SAMPLE" then
-        local hasName,Name = pcall(elements.property,sim.partProperty(cMaker.StackEdit.selected,'type'),"Name")
-        if hasName then
-            tpt.selectedl = "DEFAULT_PT_"..Name
-            print("SAMPLE")
-            return false                
-        end
-    end
-
-    if select == "DEFAULT_PT_NONE" then
-        sim.partKill(cMaker.StackEdit.selected)
-        cMaker.StackEdit.stackPos = math.max(cMaker.StackEdit.stackPos - 1,0)
-        print("REMOVE")
-        return false
-    end
-
-    if cMaker.ConfigTool.inConfigMode then
-        cMaker.ConfigTool.target = cMaker.StackEdit.selected
-        print("CONFIG")
-        return false
-    end
-
-    --Handle Elements
-    if string.sub(select,0,10) == "DEFAULT_PT" then
-        if cMaker.replaceMode or tpt.selectedreplace ~= "DEFAULT_PT_NONE" then
-            sim.partChangeType(cMaker.StackEdit.selected,elem[select])
-            print("REPLACe")
-            return false
-        else
-            sim.partProperty(cMaker.StackEdit.selected,'ctype',elem[select])
-            print("CTYPE")
-            return false
-        end
-    end
 end
 
 function MaticzplChipmaker.openSettings()

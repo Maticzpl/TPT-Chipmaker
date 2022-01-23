@@ -1,3 +1,4 @@
+-- v[STACK HUD]v
 function MaticzplChipmaker.alignToRight(text)
     local maxWidth = 0
     local outStr = ""
@@ -57,8 +58,9 @@ function MaticzplChipmaker.DrawCursorDisplay()
             local life = sim.partProperty(part,"life")
             local tmp = sim.partProperty(part,"tmp")
             local tmp2 = sim.partProperty(part,"tmp2")
+            local tmp4 = sim.partProperty(part,"pavg1")
                         
-            local strCtype = cMaker.handleCtype(ctype,type,tmp)
+            local strCtype = cMaker.handleCtype(ctype,type,tmp,tmp4)
             local overwriteType = strCtype.mode ~= nil
            
 
@@ -177,18 +179,42 @@ function MaticzplChipmaker.tmpToFiltMode(tmp)
     local modes = {"SET","AND","OR","SUB","RSHFT","BSHFT","NONE","NOT","QRTZ","VRSHFT","VBSHFT"}    
     local mode = modes[math.floor(tmp + 1)]
     if mode == nil then
-        return "NONE"
+        return "UNKNOWN"
     end
     return mode
 end
 
-function MaticzplChipmaker.handleCtype(ctype,type,tmp)
-    if type == "BRAY" or type == "PHOT" or type == "BIZR" or type == "BIZS" or type == "BIZG" then
-        return "(0x"..string.upper(string.format("%x", ctype)) ..")"
-    end
-    
-    local isCtypeNamed,ctypeName = pcall(elements.property,ctype,"Name")
+function MaticzplChipmaker.ctypeToGol() --TODO: Implement this
+    local color = nil
+    local name = nil
+    return name, color
+end
 
+function MaticzplChipmaker.handleCtype(ctype,type,tmp,tmp4)
+    local isCtypeNamed,ctypeName = pcall(elements.property,ctype,"Name")
+    local typeId = elements["DEFAULT_PT_"..type]
+
+    if type == "PHOT" or type == "BIZR" or type == "BIZS" or type == "BIZG" or type == "BRAY" or type == "C-5" then
+        return "(0x"..string.upper(string.format("%x", ctype)) ..")"
+    end   
+
+    if type == "PIPE" or type == "PPIP" then
+        if isCtypeNamed and ctypeName ~= "NONE" then            
+            local color = cMaker.getColorForString(elements.property(ctype,"Color"))
+            
+            local out = "PIPE with "..color..ctypeName.."\bg"
+
+            if ctypeName == "LAVA" then
+                color = cMaker.getColorForString(elements.property(tmp4,"Color"))
+                local isTmp4Named,tmp4Name = pcall(elements.property,tmp4,"Name")
+                if isTmp4Named then                    
+                    out = "PIPE with molten "..color..tmp4Name.."\bg"
+                end
+            end
+
+            return {mode = "overwrite",val = out}
+        end
+    end
 
     if type == "LAVA" and ctypeName ~= "NONE" then
         if isCtypeNamed then            
@@ -199,24 +225,17 @@ function MaticzplChipmaker.handleCtype(ctype,type,tmp)
         end
     end
 
-    if type == "PIPE" then
-        if isCtypeNamed and ctypeName ~= "NONE" then            
-            local color = cMaker.getColorForString(elements.property(ctype,"Color"))
-            
-            local out = "PIPE with "..color..ctypeName.."\bg"
-            return {mode = "overwrite",val = out}
-        end
-    end
+    if type == "LIFE" then  
+        local golType, color = cMaker.ctypeToGol()
 
-    if type == "LIFE" then      
-        local color = ""
-        local golType = ""
 
         --check custom gol
-        for k,v in pairs(sim.listCustomGol()) do
-            if v.rule == ctype then
-                golType = v.name
-                color = cMaker.getColorForString(v.color1)
+        if golType == nil then            
+            for k,v in pairs(sim.listCustomGol()) do
+                if v.rule == ctype then
+                    golType = v.name
+                    color = cMaker.getColorForString(v.color1)
+                end
             end
         end
 
@@ -231,10 +250,15 @@ function MaticzplChipmaker.handleCtype(ctype,type,tmp)
         return "("..mode..", 0x"..string.upper(string.format("%x", ctype)) ..")"
     end
     
-    if ctype == 0 then
-        return ""
+    if type == "CLNE" or  type == "BCLN" or type == "PCLN" or type == "PBCN" then
+        if ctypeName == "LAVA" then            
+            local color = cMaker.getColorForString(elements.property(tmp,"Color"))
+            local typeColor = cMaker.getColorForString(elements.property(typeId,"Color"))
+
+            local out = typeColor..type.."\bg(Molten "..color..ctypeName.."\bg)"
+            return {mode = "overwrite",val = out}
+        end
     end
-    
 
     if ctype >= 125 + 512 and type == "CRAY" then --CRAY FILT WITH TMP
         if (ctype - 125) % 512 == 0 then --Is it actually filt?
@@ -246,6 +270,13 @@ function MaticzplChipmaker.handleCtype(ctype,type,tmp)
         end
     end
 
+    if ctype == 0 then
+        return ""
+    end
+
+    if type == "LITH" or type == "GLOW" or type == "WWLD" then
+        return "("..ctype..")"        
+    end
     
     if isCtypeNamed then
         local color = cMaker.getColorForString(elements.property(ctype,"Color"))
@@ -268,3 +299,4 @@ function MaticzplChipmaker.handleTmp(tmp,type)
     
     return tmp    
 end
+-- ^[STACK HUD]^

@@ -3,9 +3,17 @@ function MaticzplChipmaker.EveryFrame()
     if tpt.hud() == 1 then        
         cMaker.DrawCursorDisplay()
     end
+
+    if cMaker.ConfigTool.inConfigMode then
+        cMaker.DrawModeText("Config Mode (right click to cancel)")
+    end
+
+    if cMaker.StackEdit.isInStackEditMode then
+        cMaker.DrawModeText("Stack Edit Mode (right click to cancel)")
+    end    
     
     if cMaker.StackTool.isInStackMode then
-        graphics.drawText(15,359,"Stacking Mode (right click to cancel)",252, 232, 3)
+        cMaker.DrawModeText("Stacking Mode (right click to cancel)")
         
         if cMaker.StackTool.mouseDown then            
             local startX = cMaker.StackTool.realStart.x
@@ -26,7 +34,7 @@ end
 function MaticzplChipmaker.Init()
     event.register(event.keypress, cMaker.OnKey)
     event.register(event.mousedown,cMaker.OnMouseDown)
-    event.register(event.mouseup,  cMaker.OnMouseUp)
+    --event.register(event.mouseup,  cMaker.OnMouseUp)
     event.register(event.mousemove,cMaker.OnMouseMove)
     event.register(event.tick,     cMaker.EveryFrame)
     event.register(event.close,    cMaker.SaveSettings)
