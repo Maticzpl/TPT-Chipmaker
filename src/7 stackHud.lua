@@ -187,6 +187,10 @@ end
 function MaticzplChipmaker.ctypeToGol() --TODO: Implement this
     local color = nil
     local name = nil
+
+    local nameTable =  {"HLIF",}
+    local colorTable = {}
+
     return name, color
 end
 
@@ -226,7 +230,7 @@ function MaticzplChipmaker.handleCtype(ctype,type,tmp,tmp4)
     end
 
     if type == "LIFE" then  
-        local golType, color = cMaker.ctypeToGol()
+        local golType, color = cMaker.ctypeToGol(ctype)
 
 
         --check custom gol
@@ -239,7 +243,7 @@ function MaticzplChipmaker.handleCtype(ctype,type,tmp,tmp4)
             end
         end
 
-        if color ~= "" and golType ~= "" then
+        if color ~= nil and golType ~= nil then
             local out = color..golType.."\bg"
             return {mode = "overwrite",val = out}            
         end
@@ -253,9 +257,11 @@ function MaticzplChipmaker.handleCtype(ctype,type,tmp,tmp4)
     if type == "CLNE" or  type == "BCLN" or type == "PCLN" or type == "PBCN" then
         if ctypeName == "LAVA" then            
             local color = cMaker.getColorForString(elements.property(tmp,"Color"))
+            local tmpName = elements.property(tmp,"Name")
+            
             local typeColor = cMaker.getColorForString(elements.property(typeId,"Color"))
 
-            local out = typeColor..type.."\bg(Molten "..color..ctypeName.."\bg)"
+            local out = typeColor..type.."\bg(Molten "..color..tmpName.."\bg)"
             return {mode = "overwrite",val = out}
         end
     end

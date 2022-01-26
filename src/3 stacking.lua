@@ -114,9 +114,8 @@ end
 
 
 function MaticzplChipmaker.StackTool.EnableStackMode()
+    cMaker.DisableAllModes()
     cMaker.StackTool.isInStackMode = true
-    cMaker.ConfigTool.DisableConfigMode()
-    cMaker.StackEdit.DisableStackEditMode()
 end
 
 function MaticzplChipmaker.StackTool.DisableStackMode()    
@@ -148,6 +147,23 @@ local function StackToolInit()
                   cMaker.StackTool.FinishStacking(x,y)
                 return false
             end  
+        end
+    )
+    event.register(event.tick, 
+        function ()  
+            if cMaker.StackTool.isInStackMode then
+                cMaker.DrawModeText("Stacking Mode (right click to cancel)")
+                
+                if cMaker.StackTool.mouseDown then            
+                    local startX = cMaker.StackTool.realStart.x
+                    local startY = cMaker.StackTool.realStart.y
+                    
+                    local cx = cMaker.CursorPos.x
+                    local cy = cMaker.CursorPos.y
+                    
+                    cMaker.DrawRect(startX,startY,cx,cy,255,255,255,70,true)      
+                end
+            end 
         end
     )
 

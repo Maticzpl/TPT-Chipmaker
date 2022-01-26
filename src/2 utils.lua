@@ -203,6 +203,10 @@ function MaticzplChipmaker.DisableAllModes()
         cMaker.StackEdit.DisableStackEditMode();
         return false
     end
+    if cMaker.MoveTool.isInMoveMode then
+        cMaker.MoveTool.DisableMoveMode();
+        return false
+    end
     return true
 end
 

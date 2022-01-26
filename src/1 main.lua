@@ -3,6 +3,9 @@
 
 -- Keys:
 -- Stack tool - SHIFT + S
+-- Move Tool - M
+-- Config Tool - C
+-- Stack Edit Mode - SHIFT + D
 -- Change position in stack display - PageUp / PageDown
 -- Reset position in stack display - Home
 -- Open Options - Shift + F1
@@ -43,6 +46,14 @@ MaticzplChipmaker =
     ConfigTool = {
         inConfigMode = false,
         target = -1,
+    },
+    MoveTool = {
+        isInMoveMode = false,
+        rectStart = {x = 0, y = 0},
+        rectEnd = {x = 0, y = 0},
+        movement = {x = 0,y = 0},
+        mouseDown = false,
+        isDragging = false,
     },
     CursorPos = {x = 0, y = 0},
     Settings = {

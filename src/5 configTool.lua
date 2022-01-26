@@ -1,8 +1,7 @@
 -- v[CONFIG TOOL]v
 function MaticzplChipmaker.ConfigTool.EnableConfigMode()
+    cMaker.DisableAllModes()
     cMaker.ConfigTool.inConfigMode = true
-    cMaker.StackTool.DisableStackMode()  
-    cMaker.StackEdit.DisableStackEditMode()
 end
 
 function MaticzplChipmaker.ConfigTool.DisableConfigMode()
@@ -26,6 +25,15 @@ local function ConfigToolInit()
                 cMaker.ConfigTool.target = sim.partID(x,y)
                 return false
             end
+        end
+    )
+
+    
+    event.register(event.tick, 
+        function ()   
+            if cMaker.ConfigTool.inConfigMode then
+                cMaker.DrawModeText("Config Mode (right click to cancel)")
+            end       
         end
     )
 end

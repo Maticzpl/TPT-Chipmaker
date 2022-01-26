@@ -53,9 +53,8 @@ function MaticzplChipmaker.HandleStackEdit(button)
 end
 
 function MaticzplChipmaker.StackEdit.EnableStackEditMode()
+    cMaker.DisableAllModes()
     cMaker.StackEdit.isInStackEditMode = true
-    cMaker.StackTool.DisableStackMode()  
-    cMaker.ConfigTool.DisableConfigMode()
 end
 
 function MaticzplChipmaker.StackEdit.DisableStackEditMode()    
@@ -69,23 +68,30 @@ local function StackEditInit()
                 cMaker.StackEdit.EnableStackEditMode()
                 return false
             end
-            
+             
+            if key == 1073741899 and not shift and not ctrl and not alt then    -- PageUp
+                cMaker.StackEdit.stackPos = cMaker.StackEdit.stackPos + 1
+                return false
+            end
+            if key == 1073741902 and not shift and not ctrl and not alt then    -- PageDown        
+                if cMaker.StackEdit.stackPos > 0 then
+                    cMaker.StackEdit.stackPos = cMaker.StackEdit.stackPos - 1
+                    return false
+                end             
+            end
+            if key == 1073741898 and not shift and not ctrl and not alt and not _repeat then    -- Home        
+                cMaker.StackEdit.stackPos = 0
+                return false
+            end  
+        end
+    )
+
+    event.register(event.tick, 
+        function ()              
+            cMaker.StackEdit.selected = -1    
             if cMaker.StackEdit.isInStackEditMode then
-                if key == 1073741899 and not shift and not ctrl and not alt then    -- PageUp
-                    cMaker.StackEdit.stackPos = cMaker.StackEdit.stackPos + 1
-                    return false
-                end
-                if key == 1073741902 and not shift and not ctrl and not alt then    -- PageDown        
-                    if cMaker.StackEdit.stackPos > 0 then
-                        cMaker.StackEdit.stackPos = cMaker.StackEdit.stackPos - 1
-                        return false
-                    end             
-                end
-                if key == 1073741898 and not shift and not ctrl and not alt and not _repeat then    -- Home        
-                    cMaker.StackEdit.stackPos = 0
-                    return false
-                end
-            end            
+                cMaker.DrawModeText("Stack Edit Mode (right click to cancel)")
+            end    
         end
     )
 end
