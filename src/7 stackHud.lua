@@ -32,6 +32,7 @@ function MaticzplChipmaker.alignToRight(text)
 end
 
 function MaticzplChipmaker.DrawCursorDisplay()
+    cMaker.StackEdit.selected = -1
     local x,y = simulation.adjustCoords(cMaker.CursorPos.x,cMaker.CursorPos.y)
     
     local partsOnCursor = cMaker.GetAllPartsInPos(x,y)
@@ -94,9 +95,7 @@ function MaticzplChipmaker.DrawCursorDisplay()
 
             if (#partsOnCursor - cMaker.StackEdit.stackPos) == i then
                 partsString = partsString .. " \x0F\xFF\x01\x01<\bg"    
-                if #partsOnCursor > 1 then                    
-                    cMaker.StackEdit.selected = part     
-                end       
+                cMaker.StackEdit.selected = part     
             end
 
 
@@ -176,7 +175,7 @@ function MaticzplChipmaker.DrawCursorDisplay()
 end
 
 function MaticzplChipmaker.tmpToFiltMode(tmp)
-    local modes = {"SET","AND","OR","SUB","RSHFT","BSHFT","NONE","NOT","QRTZ","VRSHFT","VBSHFT"}    
+    local modes = {"SET","AND","OR","SUB","RSHFT","BSHFT","NONE","XOR","NOT","QRTZ","VRSHIFT","VBSHIFT"}    
     local mode = modes[math.floor(tmp + 1)]
     if mode == nil then
         return "UNKNOWN"
@@ -184,12 +183,39 @@ function MaticzplChipmaker.tmpToFiltMode(tmp)
     return mode
 end
 
-function MaticzplChipmaker.ctypeToGol() --TODO: Implement this
-    local color = nil
-    local name = nil
+function MaticzplChipmaker.ctypeToGol(ctype) --TODO: Implement this
+    local golTable = {}
+    golTable[0] = { color = 830464, name = "GOL"}
+    golTable[1] = { color = 16711680, name = "HLIF"}
+    golTable[2] = { color = 255, name = "ASIM"}
+    golTable[3] = { color = 16776960, name = "2X2"}
+    golTable[4] = { color = 65535, name = "DANI"}
+    golTable[5] = { color = 16711935, name = "AMOE"}
+    golTable[6] = { color = 16777215, name = "MOVE"}
+    golTable[7] = { color = 14700560, name = "PGOL"}
+    golTable[8] = { color = 5242880, name = "DMOE"}
+    golTable[9] = { color = 5242960, name = "3-4"}
+    golTable[10] = { color = 5263440, name = "LLIF"}
+    golTable[11] = { color = 5243135, name = "STAN"}
+    golTable[12] = { color = 16510077, name = "SEED"}
+    golTable[13] = { color = 11068576, name = "MAZE"}
+    golTable[14] = { color = 10145074, name = "COAG"}
+    golTable[15] = { color = 18347, name = "WALL"}
+    golTable[16] = { color = 15054651, name = "GNAR"}
+    golTable[17] = { color = 2463112, name = "REPL"}
+    golTable[18] = { color = 801792, name = "MYST"}
+    golTable[19] = { color = 16711680, name = "LOTE"}
+    golTable[20] = { color = 25650, name = "FRG2"}
+    golTable[21] = { color = 64, name = "STAR"}
+    golTable[22] = { color = 25600, name = "FROG"}
+    golTable[23] = { color = 16776960, name = "BRAN"}
 
-    local nameTable =  {"HLIF",}
-    local colorTable = {}
+    if golTable[ctype] == nil then
+        return nil, nil
+    end
+
+    local color = cMaker.getColorForString(golTable[ctype].color)
+    local name = golTable[ctype].name
 
     return name, color
 end

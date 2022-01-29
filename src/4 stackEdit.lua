@@ -4,6 +4,11 @@ function MaticzplChipmaker.HandleStackEdit(button)
     --tpt.selecteda  middle 2
     --tpt.selectedr  right  3  
     local select = nil
+    local part = cMaker.StackEdit.selected
+
+    if part == -1 then
+        return true
+    end
 
     if button == 1 then
         select = tpt.selectedl
@@ -17,36 +22,36 @@ function MaticzplChipmaker.HandleStackEdit(button)
     
     -- Handle Tools
     if select == "DEFAULT_UI_SAMPLE" then
-        local hasName,Name = pcall(elements.property,sim.partProperty(cMaker.StackEdit.selected,'type'),"Name")
+        local hasName,Name = pcall(elements.property,sim.partProperty(part,'type'),"Name")
         if hasName then
             tpt.selectedl = "DEFAULT_PT_"..Name
-            print("SAMPLE")
+            print("Part Sampled")
             return false                
         end
     end
 
     if select == "DEFAULT_PT_NONE" then
-        sim.partKill(cMaker.StackEdit.selected)
+        sim.partKill(part)
         cMaker.StackEdit.stackPos = math.max(cMaker.StackEdit.stackPos - 1,0)
-        print("REMOVE")
+        print("Part Removed")
         return false
     end
 
     if cMaker.ConfigTool.inConfigMode then
-        cMaker.ConfigTool.target = cMaker.StackEdit.selected
-        print("CONFIG")
+        cMaker.ConfigTool.target = part
+        print("Part Configured")
         return false
     end
 
     --Handle Elements
     if string.sub(select,0,10) == "DEFAULT_PT" then
         if cMaker.replaceMode or tpt.selectedreplace ~= "DEFAULT_PT_NONE" then
-            sim.partChangeType(cMaker.StackEdit.selected,elem[select])
-            print("REPLACe")
+            sim.partChangeType(part,elem[select])
+            print("Part Replaced")
             return false
         else
-            sim.partProperty(cMaker.StackEdit.selected,'ctype',elem[select])
-            print("CTYPE")
+            sim.partProperty(part,'ctype',elem[select])
+            print("Part Ctype Set")
             return false
         end
     end
@@ -86,11 +91,20 @@ local function StackEditInit()
         end
     )
 
+    event.register(event.mousedown, 
+        function (x,y,button)     
+            if cMaker.StackEdit.isInStackEditMode then                
+                if not cMaker.HandleStackEdit(button) then
+                    return false                           
+                end 
+            end
+        end
+    )
+
     event.register(event.tick, 
-        function ()              
-            cMaker.StackEdit.selected = -1    
+        function ()                         
             if cMaker.StackEdit.isInStackEditMode then
-                cMaker.DrawModeText("Stack Edit Mode (right click to cancel)")
+                cMaker.DrawModeText("Stack Edit Mode (ESC to cancel)")
             end    
         end
     )

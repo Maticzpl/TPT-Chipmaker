@@ -45,7 +45,12 @@ MaticzplChipmaker =
     },
     ConfigTool = {
         inConfigMode = false,
+        isSetting1 = false,
+        isSetting2 = false,
+        setting1Value = -1,
+        setting2Value = -1,
         target = -1,
+        mouseHeld = false,
     },
     MoveTool = {
         isInMoveMode = false,
@@ -77,6 +82,11 @@ function MaticzplChipmaker.OnKey(key,scan,_repeat,shift,ctrl,alt) -- 99 is c 115
         return false    
     end
 
+
+    if key == 1073741886 and shift and not ctrl and not alt and not _repeat  then -- Shift + F5
+        cMaker.ReorderParticles()
+        return false    
+    end
 
     if key == 59 and not ctrl and not _repeat then -- ; semicolon for replacemode
         cMaker.replaceMode = (not cMaker.replaceMode)

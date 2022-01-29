@@ -211,5 +211,60 @@ function MaticzplChipmaker.DisableAllModes()
 end
 
 function MaticzplChipmaker.ReorderParticles()
-    -- TODO: Implement this 
+    print("Particle Order Reloaded")
+    
+    local particles = {}
+    local width = sim.XRES
+    for part in sim.parts() do
+        local x = math.floor(sim.partProperty(part,'x'));
+        local y = math.floor(sim.partProperty(part,'y'));
+
+        local particleData = {}
+        particleData.type =     sim.partProperty(part,'type');
+        particleData.temp =     sim.partProperty(part,'temp');
+        particleData.ctype =    sim.partProperty(part,'ctype');
+        particleData.tmp =      sim.partProperty(part,'tmp');
+        particleData.tmp2 =     sim.partProperty(part,'tmp2');
+        particleData.tmp3 =     sim.partProperty(part,'pavg0');
+        particleData.tmp4 =     sim.partProperty(part,'pavg1');
+        particleData.life =     sim.partProperty(part,'life');
+        particleData.vx =       sim.partProperty(part,'vx');
+        particleData.vy =       sim.partProperty(part,'vy');
+        particleData.dcolour =  sim.partProperty(part,'dcolour');
+        particleData.flags =    sim.partProperty(part,'flags');
+
+        local index = math.floor(x + (y * width))
+        if particles[index] == nil then
+            particles[index] = {}            
+        end
+        table.insert(particles[index],particleData)
+        --particles[index][#particles[index]] = particleData  
+        sim.partKill(part)     
+    end
+
+    for i = sim.XRES * sim.YRES, 0, -1 do
+        local stack = particles[i]
+        if stack ~= nil then
+            for k,part in pairs(stack) do
+                local x = math.floor(i % sim.XRES)
+                local y = math.floor((i - x) / sim.XRES)
+
+                local id = sim.partCreate(-3,x,y,28)
+
+                sim.partProperty(id,'type',part.type);
+                sim.partProperty(id,'temp',part.temp);
+                sim.partProperty(id,'ctype',part.ctype);
+                sim.partProperty(id,'tmp',part.tmp);
+                sim.partProperty(id,'tmp2',part.tmp2);
+                sim.partProperty(id,'pavg0',part.tmp3);
+                sim.partProperty(id,'pavg1',part.tmp4);
+                sim.partProperty(id,'life',part.life);
+                sim.partProperty(id,'vx',part.vx);
+                sim.partProperty(id,'vy',part.vy);
+                sim.partProperty(id,'dcolour',part.dcolour)
+                sim.partProperty(id,'flags',part.flags);
+            end            
+        end
+    end
+
 end
