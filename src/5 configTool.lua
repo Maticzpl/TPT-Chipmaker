@@ -1,5 +1,3 @@
-local cMaker = MaticzplChipmaker
-
 -- v[CONFIG TOOL]v
 function MaticzplChipmaker.ConfigTool.EnableConfigMode()
     cMaker.DisableAllModes()
@@ -60,7 +58,7 @@ function MaticzplChipmaker.ConfigTool.GetEndInDirection(direction,centerx,center
     return {x = x, y = y}
 end
 
-function MaticzplChipmaker.ConfigTool.CheckUsefulNeighbors(direction,x,y)
+function MaticzplChipmaker.ConfigTool.CheckUsefulNeighbors(direction,x,y,type)
     local part = nil
     if direction == 1 then
         part = sim.partID(x-1,y-1)
@@ -92,7 +90,7 @@ function MaticzplChipmaker.ConfigTool.CheckUsefulNeighbors(direction,x,y)
 
     local t = sim.partProperty(part,'type')
 
-    if t == elem.DEFAULT_PT_SPRK or t == elem.DEFAULT_PT_FILT or t == elem.DEFAULT_PT_METL or t == elem.DEFAULT_PT_PSCN or t == elem.DEFAULT_PT_NSCN or t == elem.DEFAULT_PT_TUNG or t == elem.DEFAULT_PT_INWR or t == elem.DEFAULT_PT_INST or t == elem.DEFAULT_PT_BMTL or t == elem.DEFAULT_PT_TTAN or t == elem.DEFAULT_PT_IRON then
+    if (t == elem.DEFAULT_PT_FILT and type == elem.DEFAULT_PT_LDTC) or t == elem.DEFAULT_PT_SPRK or t == elem.DEFAULT_PT_METL or t == elem.DEFAULT_PT_PSCN or t == elem.DEFAULT_PT_NSCN or t == elem.DEFAULT_PT_TUNG or t == elem.DEFAULT_PT_INWR or t == elem.DEFAULT_PT_INST or t == elem.DEFAULT_PT_BMTL or t == elem.DEFAULT_PT_TTAN or t == elem.DEFAULT_PT_IRON then
         return true
     end
 
@@ -153,7 +151,7 @@ function MaticzplChipmaker.ConfigTool.DrawPartConfig(part,overwriteDirection)
     if type == elem.DEFAULT_PT_DTEC or type == elem.DEFAULT_PT_TSNS or type == elem.DEFAULT_PT_LSNS then
         local r = sim.partProperty(part,'tmp2')
         
-        MaticzplChipmaker.DrawRect(x-r,y-r,x+r,y+r, 255, 200, 200, 255);
+        MaticzplChipmaker.DrawRect(x-r,y-r,x+r,y+r, 0, 255, 0, cMaker.ConfigTool.overlayAlpha);
         return
     end
 
@@ -166,15 +164,27 @@ function MaticzplChipmaker.ConfigTool.DrawPartConfig(part,overwriteDirection)
         end
 
         for d = 1, 8, 1 do --8 directions
+            local opposite = d + 4
+            if opposite > 8 then
+                opposite = opposite - 8
+            end
+            
             if overwriteDirection ~= nil then
                 d = overwriteDirection
             end
-            if cMaker.ConfigTool.CheckUsefulNeighbors((d + 4) % 8,x,y) or overwriteDirection ~= nil then               
-                local lineEnd = cMaker.ConfigTool.GetEndInDirection(d,x,y,skip+1)
-                cMaker.DrawLine(x+0.5,y+0.5,lineEnd.x+0.5,lineEnd.y+0.5, 255,0,0,255)
+            if cMaker.ConfigTool.CheckUsefulNeighbors(opposite,x,y,type) or overwriteDirection ~= nil then               
+                local lineEnd = cMaker.ConfigTool.GetEndInDirection(d,x,y,skip)                
+                cMaker.DrawLine(x+0.5,y+0.5,lineEnd.x+0.5,lineEnd.y+0.5, 255,0,0,cMaker.ConfigTool.overlayAlpha)
 
-                local rangeEnd = cMaker.ConfigTool.GetEndInDirection(d,lineEnd.x,lineEnd.y,range-1)
-                cMaker.DrawLine(lineEnd.x+0.5,lineEnd.y+0.5,rangeEnd.x+0.5,rangeEnd.y+0.5, 0,255,0,255)
+                local rangeStart =  cMaker.ConfigTool.GetEndInDirection(d,lineEnd.x,lineEnd.y,0)    
+                if d % 2 == 0 then
+                    rangeStart = cMaker.ConfigTool.GetEndInDirection(d,lineEnd.x,lineEnd.y,1)                    
+                end
+
+                local rangeEnd =    cMaker.ConfigTool.GetEndInDirection(d,rangeStart.x,rangeStart.y,range-1)            
+                if range > 0 then         
+                    cMaker.DrawLine(rangeStart.x+0.5,rangeStart.y+0.5,rangeEnd.x+0.5,rangeEnd.y+0.5, 0,255,0,cMaker.ConfigTool.overlayAlpha)
+                end
             end
         end
         return
@@ -184,18 +194,31 @@ function MaticzplChipmaker.ConfigTool.DrawPartConfig(part,overwriteDirection)
         local range = sim.partProperty(part,'tmp')
         local skip = sim.partProperty(part,'tmp2')
         for d = 1, 8, 1 do --8 directions
+            local opposite = d + 4
+            if opposite > 8 then
+                opposite = opposite - 8
+            end
+            
             if overwriteDirection ~= nil then
                 d = overwriteDirection
             end
-            if cMaker.ConfigTool.CheckUsefulNeighbors((d + 4) % 8,x,y) or overwriteDirection ~= nil then    
-                local lineEnd = cMaker.ConfigTool.GetEndInDirection(d,x,y,range+1)
-                cMaker.DrawLine(x+0.5,y+0.5,lineEnd.x+0.5,lineEnd.y+0.5, 255,0,0,255)
+            if cMaker.ConfigTool.CheckUsefulNeighbors(opposite,x,y,type) or overwriteDirection ~= nil then  
+                local lineEnd = cMaker.ConfigTool.GetEndInDirection(d,x,y,range)
+                cMaker.DrawLine(x+0.5,y+0.5,lineEnd.x+0.5,lineEnd.y+0.5, 255,0,0,cMaker.ConfigTool.overlayAlpha)
 
-                local rangeEnd = cMaker.ConfigTool.GetEndInDirection(d,lineEnd.x,lineEnd.y,skip)
-                cMaker.DrawLine(lineEnd.x+0.5,lineEnd.y+0.5,rangeEnd.x+0.5,rangeEnd.y+0.5, 0,255,0,255)
+                local rangeStart = cMaker.ConfigTool.GetEndInDirection(d,lineEnd.x,lineEnd.y,0)
+                if d % 2 == 0 then
+                    rangeStart = cMaker.ConfigTool.GetEndInDirection(d,lineEnd.x,lineEnd.y,1)                    
+                end
+                local rangeEnd = cMaker.ConfigTool.GetEndInDirection(d,rangeStart.x,rangeStart.y,skip-1)
+                cMaker.DrawLine(rangeStart.x+0.5,rangeStart.y+0.5,rangeEnd.x+0.5,rangeEnd.y+0.5, 0,255,0,cMaker.ConfigTool.overlayAlpha)
                 
-                local targetEnd = cMaker.ConfigTool.GetEndInDirection(d,rangeEnd.x,rangeEnd.y,range-1)
-                cMaker.DrawLine(rangeEnd.x+0.5,rangeEnd.y+0.5,targetEnd.x+0.5,targetEnd.y+0.5, 255,0,0,255)
+                local targetStart = cMaker.ConfigTool.GetEndInDirection(d,rangeEnd.x,rangeEnd.y,0)
+                if d % 2 == 0 then
+                    targetStart = cMaker.ConfigTool.GetEndInDirection(d,rangeEnd.x,rangeEnd.y,1)                 
+                end
+                local targetEnd = cMaker.ConfigTool.GetEndInDirection(d,targetStart.x,targetStart.y,range-1)
+                cMaker.DrawLine(targetStart.x+0.5,targetStart.y+0.5,targetEnd.x+0.5,targetEnd.y+0.5, 255,0,0,cMaker.ConfigTool.overlayAlpha)
             end
         end
         return
@@ -204,13 +227,11 @@ function MaticzplChipmaker.ConfigTool.DrawPartConfig(part,overwriteDirection)
 end
 
 function MaticzplChipmaker.ConfigTool.SetFirst(part)
-    print("1")
     local cx, cy = sim.adjustCoords(cMaker.CursorPos.x,cMaker.CursorPos.y)
 
     local type = sim.partProperty(part,'type')
     local x, y = sim.partPosition(part)
     
-
     if type == elem.DEFAULT_PT_DTEC or type == elem.DEFAULT_PT_TSNS or type == elem.DEFAULT_PT_LSNS then
         --local distance = math.floor(math.sqrt(((x-cx)*(x-cx)) + ((y-cy)*(y-cy)))) --No, its a square xd
         local distance = math.abs(math.max(math.max(x - cx,cx - x), math.max(y - cy, cy - y)))
@@ -220,18 +241,55 @@ function MaticzplChipmaker.ConfigTool.SetFirst(part)
     end
 
     if type == elem.DEFAULT_PT_LDTC or type == elem.DEFAULT_PT_CRAY then
-       
+        local direction = cMaker.ConfigTool.OffsetToDirection(x,y,cx,cy)
+        local distance = math.abs(math.max(math.max(x - cx,cx - x), math.max(y - cy, cy - y)))
         
+        if type == elem.DEFAULT_PT_LDTC then
+            sim.partProperty(part,'life',distance)        
+        else
+            sim.partProperty(part,'tmp2',distance)
+        end
+        cMaker.ConfigTool.setting1Value = distance
+        cMaker.ConfigTool.direction = direction
+        return
     end
 
     if type == elem.DEFAULT_PT_DRAY then
+        local direction = cMaker.ConfigTool.OffsetToDirection(x,y,cx,cy)
+        local distance = math.abs(math.max(math.max(x - cx,cx - x), math.max(y - cy, cy - y)))
+        
+        sim.partProperty(part,'tmp',distance)   
 
+        cMaker.ConfigTool.setting1Value = distance
+        cMaker.ConfigTool.direction = direction        
+        return
     end
 end
 
 function MaticzplChipmaker.ConfigTool.SetSecond(part)
-    print("2")
+    local cx, cy = sim.adjustCoords(cMaker.CursorPos.x,cMaker.CursorPos.y)
 
+    local type = sim.partProperty(part,'type')
+    local px, py = sim.partPosition(part)
+    
+    if type == elem.DEFAULT_PT_LDTC or type == elem.DEFAULT_PT_CRAY then
+        local endPoint = cMaker.ConfigTool.GetEndInDirection(cMaker.ConfigTool.direction,px,py,cMaker.ConfigTool.setting1Value)
+        local distance = math.abs(math.max(math.max(endPoint.x - cx,cx - endPoint.x), math.max(endPoint.y - cy, cy - endPoint.y)))
+        
+        sim.partProperty(part,'tmp',distance)
+        cMaker.ConfigTool.setting2Value = distance
+        return
+    end
+
+    if type == elem.DEFAULT_PT_DRAY then
+        local endPoint = cMaker.ConfigTool.GetEndInDirection(cMaker.ConfigTool.direction,px,py,cMaker.ConfigTool.setting1Value)
+        local distance = math.abs(math.max(math.max(endPoint.x - cx,cx - endPoint.x), math.max(endPoint.y - cy, cy - endPoint.y)))
+        
+        sim.partProperty(part,'tmp2',distance)
+
+        cMaker.ConfigTool.setting2Value = distance
+        return
+    end
 end
 
 local function ConfigToolInit()
@@ -292,7 +350,6 @@ local function ConfigToolInit()
                 if cMaker.ConfigTool.target ~= -1 then
                     target = cMaker.ConfigTool.target
                 end
-                print(target)
 
                 if cMaker.ConfigTool.isSetting1 then
                     cMaker.ConfigTool.SetFirst(target)       
@@ -307,8 +364,15 @@ local function ConfigToolInit()
                     cMaker.ConfigTool.SetSecond(target)    
                 end
 
-                local x,y = sim.partPosition(target)
-                cMaker.ConfigTool.DrawPartConfig(target,cMaker.ConfigTool.OffsetToDirection(x,y,cMaker.CursorPos.x,cMaker.CursorPos.y))
+                if target ~= -1 then      
+                    local x,y = sim.partPosition(target)
+                    local cx, cy = sim.adjustCoords(cMaker.CursorPos.x,cMaker.CursorPos.y)
+                    if not cMaker.ConfigTool.isSetting1 and not cMaker.ConfigTool.isSetting2 then
+                        cMaker.ConfigTool.DrawPartConfig(target)
+                    else
+                        cMaker.ConfigTool.DrawPartConfig(target,cMaker.ConfigTool.OffsetToDirection(x,y,cx,cy))
+                    end
+                end
 
                 
             end       

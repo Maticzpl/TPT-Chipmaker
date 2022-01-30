@@ -6,9 +6,12 @@
 -- Move Tool - M
 -- Config Tool - C
 -- Stack Edit Mode - SHIFT + D
+-- Choose property in stack edit - Left / Right Arrows
+-- Set property value in stack edit - Enter
 -- Change position in stack display - PageUp / PageDown
 -- Reset position in stack display - Home
 -- Open Options - Shift + F1
+-- Reorder Particles - Shift + F5
 
 -- Features:
 -- Stack HUD - displays the elements of a stack, shows info like FILT ctype in hexadecimal etc. Types are colored!
@@ -42,15 +45,18 @@ MaticzplChipmaker =
         selected = -1,
         mouseCaptured = false,
         mouseReleased = true,
+        selectedField = 0,
     },
     ConfigTool = {
         inConfigMode = false,
         isSetting1 = false,
         isSetting2 = false,
         setting1Value = -1,
+        direction = 0,
         setting2Value = -1,
         target = -1,
         mouseHeld = false,
+        overlayAlpha = 150,
     },
     MoveTool = {
         isInMoveMode = false,
@@ -66,6 +72,7 @@ MaticzplChipmaker =
         unstackHeight = 50,
     },
     replaceMode = false,
+    propTable = {'ctype','temp','life','tmp','tmp2','pavg0','pavg1'}
 }
 local cMaker = MaticzplChipmaker
 

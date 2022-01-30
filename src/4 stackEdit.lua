@@ -1,3 +1,5 @@
+local cMaker = MaticzplChipmaker
+
 -- v[STACK EDIT]v
 function MaticzplChipmaker.HandleStackEdit(button)
     --tpt.selectedl  left   1
@@ -88,6 +90,36 @@ local function StackEditInit()
                 cMaker.StackEdit.stackPos = 0
                 return false
             end  
+            if cMaker.StackEdit.isInStackEditMode then                 
+                if key == 1073741903 and not shift and not ctrl and not alt and not _repeat then --Right arrow
+                    cMaker.StackEdit.selectedField = cMaker.StackEdit.selectedField + 1
+                    if cMaker.propTable[cMaker.StackEdit.selectedField] == nil  then
+                        cMaker.StackEdit.selectedField = 0
+                    end
+                    return false
+                end               
+                if key == 1073741904 and not shift and not ctrl and not alt and not _repeat then --Left arrow
+                    cMaker.StackEdit.selectedField = cMaker.StackEdit.selectedField-1
+                    if cMaker.StackEdit.selectedField < 0 then
+                        cMaker.StackEdit.selectedField = 0
+                    end
+                    return false
+                end   
+                if key == 13 and not shift and not ctrl and not alt and not _repeat then -- Enter                    
+                    if cMaker.StackEdit.selectedField > 0 then
+                        local field = cMaker.propTable[cMaker.StackEdit.selectedField]
+                        while true do                            
+                            local success, val = pcall(sim.partProperty,cMaker.StackEdit.selected,field,tpt.input("Set Property","Set value for "..field))
+                            if success then
+                                break
+                            else
+                                tpt.confirm("Wrong value","This property doesnt accept this value")
+                            end
+                        end
+                    end
+                    return false
+                end
+            end
         end
     )
 

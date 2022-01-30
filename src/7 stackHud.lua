@@ -111,6 +111,15 @@ function MaticzplChipmaker.DrawCursorDisplay()
     if skipped > 0 then
         partsString = partsString .. "And "..skipped.." more "
     end
+
+    if cMaker.StackEdit.selectedField > 0 then
+        local field = cMaker.propTable[cMaker.StackEdit.selectedField]
+        local value = sim.partProperty(cMaker.StackEdit.selected,field)
+        if value ~= nil then
+            partsString = partsString .. "\btProp Edit: ["..field..': '..value..']\bg\n'
+        end
+    end
+
     if cMaker.StackEdit.stackPos ~= 0 then         
         partsString = partsString .. "\bt[Stack Pos: "..cMaker.StackEdit.stackPos.."]\bg\n"
     else 

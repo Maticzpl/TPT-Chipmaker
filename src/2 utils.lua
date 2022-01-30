@@ -245,7 +245,8 @@ function MaticzplChipmaker.ReorderParticles()
     for i = sim.XRES * sim.YRES, 0, -1 do
         local stack = particles[i]
         if stack ~= nil then
-            for k,part in pairs(stack) do
+            for j = #stack, 1, -1 do
+                local part = stack[j]
                 local x = math.floor(i % sim.XRES)
                 local y = math.floor((i - x) / sim.XRES)
 
