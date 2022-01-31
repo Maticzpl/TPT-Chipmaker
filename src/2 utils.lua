@@ -185,6 +185,37 @@ function MaticzplChipmaker.GetAllPartsInPos(x,y)
     return result
 end
 
+-- Thanks to mad-cow for this function!
+function MaticzplChipmaker.GetAllPartsInRegion(x1, y1, x2, y2)
+    -- builts a map of particles in a region.
+    -- WARN: Misbehaves if partile order hasn't been reloaded since it relies on sim.parts()
+    -- Save the returned value and provide it to .GetAllPartsInPos(x,y,region) to reduce computational complexity
+    -- or you can just index the returned value youself, idc
+    local result = {}
+    local width = sim.XRES
+    if x2 < x1 then
+        x1,x2 = x2,x1
+    end
+    if y2 < y1 then
+        y1,y2 = y2,y1
+    end
+    for part in sim.parts() do
+        local px, py = sim.partPosition(part)
+        
+        px = math.floor(px+0.5) -- Round pos
+        py = math.floor(py+0.5)
+        local idx = math.floor(px + (py * width))
+        
+        if px >= x1 and px <= x2 and py >= y1 and py <= y2 then
+            if not result[idx] then
+                result[idx] = {}
+            end
+            table.insert(result[idx], part)
+        end
+    end
+    return result
+end
+
 function MaticzplChipmaker.DrawModeText(text)
     graphics.fillRect(0,0,sim.XRES,sim.YRES,0,0,0,128)
     graphics.drawText(15,360,text,252, 232, 3)

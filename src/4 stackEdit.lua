@@ -21,6 +21,8 @@ function MaticzplChipmaker.HandleStackEdit(button)
             select = tpt.selecteda
         end              
     end            
+
+    sim.takeSnapshot()
     
     -- Handle Tools
     if select == "DEFAULT_UI_SAMPLE" then
@@ -108,6 +110,7 @@ local function StackEditInit()
                 if key == 13 and not shift and not ctrl and not alt and not _repeat then -- Enter                    
                     if cMaker.StackEdit.selectedField > 0 then
                         local field = cMaker.propTable[cMaker.StackEdit.selectedField]
+                        sim.takeSnapshot()
                         while true do                            
                             local success, val = pcall(sim.partProperty,cMaker.StackEdit.selected,field,tpt.input("Set Property","Set value for "..field))
                             if success then

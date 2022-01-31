@@ -1,38 +1,30 @@
 -- v[STACK TOOL]v
+
+--Thanks to mad-cow for optimizing those 2 functions
 function MaticzplChipmaker.StackTool.Stack()
     local s = cMaker.StackTool
     
     local partsMoved = 0
     
+    sim.takeSnapshot()
     cMaker.ReorderParticles()
     
-    local xDirection = 1
-    if s.rectStart.x > s.rectEnd.x then
-        xDirection = -1
-    end
+    local region = cMaker.GetAllPartsInRegion(s.rectStart.x,s.rectStart.y,
+                                              s.rectEnd.x,s.rectEnd.y)
     
-    local yDirection = 1
-    if s.rectStart.y > s.rectEnd.y then
-        yDirection = -1
-    end
-    
-    for x =     s.rectStart.x, s.rectEnd.x, xDirection do
-        for y = s.rectStart.y, s.rectEnd.y, yDirection do
-            local parts = cMaker.GetAllPartsInPos(x,y)
-            
-            for i,part in pairs(parts) do
-                if part ~= nil then
-                    if x ~= s.rectEnd.x and y ~= s.rectEnd.y then   --count every particle except the ones that got already stacked
-                        partsMoved = partsMoved + 1
-                    elseif partsMoved < #parts then
-                        partsMoved = partsMoved + 1
-                    end
+    for idx,parts in pairs(region) do
+        for i,part in pairs(parts) do
+            if part ~= nil then
+                if x ~= s.rectEnd.x and y ~= s.rectEnd.y then   --count every particle except the ones that got already stacked
+                    partsMoved = partsMoved + 1
+                elseif partsMoved < #parts then
+                    partsMoved = partsMoved + 1
                 end
-                
                 
                 sim.partProperty(part,"x",s.rectEnd.x)
                 sim.partProperty(part,"y",s.rectEnd.y)
             end
+            
         end
     end
     
@@ -64,16 +56,17 @@ function MaticzplChipmaker.StackTool.Unstack()
             break
         end
         
-        yOffset = yOffset + 1
-        if yOffset >= cMaker.Settings.unstackHeight then
-            xOffset = xOffset + 1
-            yOffset = 0
+        xOffset = xOffset + 1
+        if xOffset >= cMaker.Settings.unstackHeight then
+            yOffset = yOffset + 1
+            xOffset = 0
         end
     end
     
     if collision then
         print("Not enough space to unstack")
     else
+        sim.takeSnapshot()
         xOffset = 0
         yOffset = 0 
         for i,part in pairs(parts) do
@@ -81,10 +74,10 @@ function MaticzplChipmaker.StackTool.Unstack()
             sim.partProperty(part,"x",s.rectStart.x + xOffset)
            
         
-            yOffset = yOffset + 1
-            if yOffset >= cMaker.Settings.unstackHeight then
-                xOffset = xOffset + 1
-                yOffset = 0
+            xOffset = xOffset + 1
+            if xOffset >= cMaker.Settings.unstackHeight then
+                yOffset = yOffset + 1
+                xOffset = 0
             end
         end
     end

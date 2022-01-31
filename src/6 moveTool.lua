@@ -26,15 +26,13 @@ function MaticzplChipmaker.MoveTool.Place(x,y)
         yDirection = -1
     end
 
-    for x =     s.rectStart.x, s.rectEnd.x, xDirection do
-        for y = s.rectStart.y, s.rectEnd.y, yDirection do
-            local parts = cMaker.GetAllPartsInPos(x,y)
-
-            for k, part in pairs(parts) do
-                sim.partProperty(part,'x',x - s.movement.x)
-                sim.partProperty(part,'y',y - s.movement.y)
-            end
-        end
+    sim.takeSnapshot()
+    for l, stack in pairs(MaticzplChipmaker.GetAllPartsInRegion(s.rectStart.x,s.rectStart.y,s.rectEnd.x,s.rectEnd.y)) do
+        for k, part in pairs(stack) do
+            local x,y = sim.partPosition(part)
+            sim.partProperty(part,'x',x - s.movement.x)
+            sim.partProperty(part,'y',y - s.movement.y)
+        end        
     end
 end
 
