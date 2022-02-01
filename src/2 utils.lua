@@ -1,8 +1,6 @@
 -- Thanks LBPhacker for fixing this :P
 function MaticzplChipmaker.getColorForString(color)
     local function handle_nono_zone(chr)
-        chr = string.char(chr)
-
         local byte = chr:byte()
         if byte < 0x80 then
             return chr
@@ -42,9 +40,14 @@ function MaticzplChipmaker.getColorForString(color)
         g = g + adjustement
         b = b + adjustement
     end
-    r = handle_nono_zone(r)
-    g = handle_nono_zone(g)
-    b = handle_nono_zone(b)
+    r = string.char(r)
+    g = string.char(g)
+    b = string.char(b)
+    if tpt.version.jacob1s_mod == nil then
+        r = handle_nono_zone(r)
+        g = handle_nono_zone(g)
+        b = handle_nono_zone(b)        
+    end
     return "\x0F"..r..g..b
 
 end
@@ -151,6 +154,7 @@ function MaticzplChipmaker.DrawLine(x1, y1, x2, y2, r,g,b,a,adjust)
     local xDiff = math.max((x1 - x2),(x2 - x1))
     local yDiff = math.max((y1 - y2),(y2 - y1))
     local length = math.sqrt((xDiff*xDiff) + (yDiff*yDiff))
+    length = length * 2 -- for accuracy
 
     local ex, ey, scale, size = ren.zoomWindow()
     for step = 0, 1, 1/length do
@@ -300,3 +304,128 @@ function MaticzplChipmaker.ReorderParticles()
     end
 
 end
+
+function MaticzplChipmaker.GetEndInDirection(direction,centerx,centery,distance)
+    local x = centerx
+    local y = centery
+    
+    if direction == 1 then --Left top
+        x = centerx - distance
+        y = centery - distance
+        return {x = x, y = y}
+    end
+    if direction == 2 then
+        y = centery - distance
+        return {x = x, y = y}        
+    end
+    if direction == 3 then
+        x = centerx + distance
+        y = centery - distance
+        return {x = x, y = y}        
+    end
+    if direction == 4 then
+        x = centerx + distance
+        return {x = x, y = y}        
+    end
+    if direction == 5 then
+        x = centerx + distance
+        y = centery + distance
+        return {x = x, y = y}        
+    end
+    if direction == 6 then
+        y = centery + distance
+        return {x = x, y = y}        
+    end
+    if direction == 7 then
+        x = centerx - distance
+        y = centery + distance
+        return {x = x, y = y}          
+    end    
+    if direction == 8 then
+        x = centerx - distance
+        return {x = x, y = y}        
+    end
+
+    x = math.floor(x + 0.5)
+    y = math.floor(y + 0.5)
+
+    return {x = x, y = y}
+end
+
+function MaticzplChipmaker.OffsetToDirection(x,y,cx,cy)
+    local fx = cx - x
+    local fy = cy - y
+
+    local a = math.atan2(fx,-fy) * (180/math.pi)
+
+    if a < 0 then
+        a = 360 + a
+    end
+
+    --0(0,-1)    45  (1,-1)
+
+    --   X       90  (1,0 )
+
+    --180(0,1)   135 (1,1 )
+
+    if (a > (360-20) and a <= 0) --0
+        or 
+        (a >= 0 and a < 20) then
+        return 2 -- top
+    end
+    if a >= 20 and a <=70 then --45
+        return 3
+    end
+    if a > 70 and a < 110 then --90
+        return 4
+    end
+    if a >= 110 and a <=160 then --135
+        return 5
+    end
+    if a > 160 and a < 200 then --180
+        return 6
+    end
+    if a >= 200 and a <= 250 then --225
+        return 7
+    end
+    if a > 250 and a < 290 then --270
+        return 8
+    end
+    if a >= 290 and a <= 340 then --315
+        return 1
+    end
+    
+    
+
+end
+
+function MaticzplChipmaker.SegmentedLine:new(direction,alpha)
+    local o = {}
+    o.segments = {}
+    o.direction = direction
+    o.alpha = alpha
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
+
+function MaticzplChipmaker.SegmentedLine:addSegment(r,g,b,length)
+    length = (length or 1) - 1
+    table.insert(self.segments,{r=r,g=g,b=b,length=length})
+end
+
+function MaticzplChipmaker.SegmentedLine:draw(x,y)
+    for key, segment in pairs(self.segments) do
+        local r,g,b = segment.r,segment.g,segment.b
+        local length = segment.length
+        local lineEnd = cMaker.GetEndInDirection(self.direction,x,y,length)
+
+        cMaker.DrawLine(x+0.5,y+0.5,lineEnd.x+0.5,lineEnd.y+0.5,r,g,b,self.alpha)
+
+        local nextLineStart = cMaker.GetEndInDirection(self.direction,lineEnd.x,lineEnd.y,1)
+        x = nextLineStart.x
+        y = nextLineStart.y
+    end
+end
+
+MaticzplChipmaker.SegmentedLine:new(1):addSegment()

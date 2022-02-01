@@ -19,13 +19,7 @@
 -- Stack Tool - stacks all the particles inside of a specified rectangle into one place AND unstacks already stacked particles
 
 -- Planned Features:
--- Stack edit support for PROP tool
--- Config tool like in mark2222's mod
--- Particle Reorder hotkey
 -- More customization in the settings
-
--- Btw this code is quite a mess rn and will get refactored once I finish the main features
-
 
 if MaticzplChipmaker then return end
 
@@ -71,6 +65,7 @@ MaticzplChipmaker =
         cursorDisplayBgAlpha = 190,
         unstackHeight = 50,
     },
+    SegmentedLine = {},
     replaceMode = false,
     propTable = {'ctype','temp','life','tmp','tmp2','pavg0','pavg1'}
 }

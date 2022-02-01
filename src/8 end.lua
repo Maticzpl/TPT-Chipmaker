@@ -24,8 +24,3 @@ function MaticzplChipmaker.Init()
 end
 
 cMaker.Init()
-
---TODO: 
---  Config tool
---  Particle reorder function
---  Call the particle reorder function when using stack tool

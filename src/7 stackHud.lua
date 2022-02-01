@@ -31,6 +31,7 @@ function MaticzplChipmaker.alignToRight(text)
     return outStr
 end
 
+-- yes this function is garbage but i dont feel like refactoring it
 function MaticzplChipmaker.DrawCursorDisplay()
     cMaker.StackEdit.selected = -1
     local x,y = simulation.adjustCoords(cMaker.CursorPos.x,cMaker.CursorPos.y)
@@ -142,34 +143,55 @@ function MaticzplChipmaker.DrawCursorDisplay()
         y=44
     }      
 
+    local zx,zy,s = ren.zoomScope()
+    local zwx,zwy,zfactor,zsize = ren.zoomWindow();
     if tpt.version.modid == 6 then  -- Cracker's mod
         textPos = {
             x = 9,
             y=50
         }
-
-    elseif tpt.version.jacob1s_mod ~= nil then  --Jacob1's mod
-        if ren.zoomEnabled() then
-            local zx,zy,s = ren.zoomScope()
-
-            if zx + (s / 2) > 305 then       -- if zoom window on the left side
-                textPos = {
-                    x = 16,
-                    y=288
-                }    
+        if ren.zoomEnabled() and zx + (s / 2) > 305 then
+            textPos = {
+                x = 7,
+                y= zsize + 4
+            }   
+        end
+    else
+        if ren.zoomEnabled() then            
+            if tpt.version.jacob1s_mod ~= nil then
+                if zx + (s / 2) > 305 then       -- if zoom window on the left side
+                    textPos = {
+                        x = 16,
+                        y=zsize + 32
+                    }    
+                else
+                    textPos = {
+                        x = (sim.XRES - width-15),
+                        y = zsize + 32
+                    }
+                    partsString = cMaker.alignToRight(partsString)
+                end   
+                noDebugOffset = 11
             else
-                textPos = {
-                    x = (597 - width),
-                    y = 288
-                }
-                partsString = cMaker.alignToRight(partsString)
+                if zx + (s / 2) > 305 then       -- if zoom window on the left side
+                    textPos = {
+                        x = 7,
+                        y= zsize + 4
+                    }    
+                else
+                    textPos = {
+                        x = (sim.XRES - width - 7),
+                        y = zsize + 4
+                    }
+                    partsString = cMaker.alignToRight(partsString)
+                end   
+    
+                noDebugOffset = 0
             end
-            noDebugOffset = 11
+
         else            
             partsString = cMaker.alignToRight(partsString)
         end
-    else -- Vanilla and others
-        partsString = cMaker.alignToRight(partsString)
     end
     
 
