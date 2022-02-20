@@ -47,6 +47,11 @@ function MaticzplChipmaker.DrawCursorDisplay()
     local hasSpecialDisplay = false
 
     local offset = math.max(cMaker.StackEdit.stackPos - 2,0)
+
+    if #partsOnCursor ~= 0 and #partsOnCursor - offset < 1 then
+        offset = 0
+    end
+
     -- Assemble the string and inspect the stack
     for i = #partsOnCursor -  offset, 1, -1 do     
         local part = partsOnCursor[i]

@@ -112,7 +112,17 @@ local function StackEditInit()
                         local field = cMaker.propTable[cMaker.StackEdit.selectedField]
                         sim.takeSnapshot()
                         while true do                            
-                            local success, val = pcall(sim.partProperty,cMaker.StackEdit.selected,field,tpt.input("Set Property","Set value for "..field))
+                            local val = tpt.input("Set Property","Set value for "..field)
+                            if string.sub(val,#val) == "C" then
+                                val = tonumber(string.sub(val,0,#val-1)) + 273.15
+                            end
+                            
+                            local name = elem["DEFAULT_PT_"..val]
+                            if name ~= nil then
+                                val = name
+                            end
+
+                            local success, val = pcall(sim.partProperty,cMaker.StackEdit.selected,field,val)
                             if success then
                                 break
                             else

@@ -120,6 +120,37 @@ function MaticzplChipmaker.ConfigTool.DrawPartConfig(part,overwriteDirection)
         cMaker.DrawLine(x,y,x,y,255,255,255,255)
         return
     end
+
+    if type == elem.DEFAULT_PT_CONV then
+        local from = sim.partProperty(part,'tmp')
+        local to = sim.partProperty(part,'ctype')
+
+        local success, colorFrom = pcall(elements.property,from,"Color")
+        if success then
+            colorFrom = cMaker.getColorForString(colorFrom)  
+        else
+            colorFrom = ""          
+        end
+
+        local success, colorTo = pcall(elements.property,to,"Color")
+        if success then
+            colorTo = cMaker.getColorForString(colorTo)  
+        else
+            colorTo = ""          
+        end
+
+        local success, nameFrom = pcall(elements.property,from,"Name")
+        if not success then
+            nameFrom = from
+        end
+
+        local success, nameTo = pcall(elements.property,to,"Name")
+        if not success then
+            nameTo = to
+        end
+
+        gfx.drawText(15,345,colorFrom..nameFrom.." -> "..colorTo..nameTo)        
+    end
 end
 
 function MaticzplChipmaker.ConfigTool.SetFirst(part)
@@ -160,6 +191,16 @@ function MaticzplChipmaker.ConfigTool.SetFirst(part)
         cMaker.ConfigTool.direction = direction        
         return
     end
+
+    if type == elem.DEFAULT_PT_CONV then
+        local type1 = elem.DEFAULT_PT_NONE
+        if cMaker.StackEdit.selected ~= -1 then
+            type1 = sim.partProperty(cMaker.StackEdit.selected,'type')
+        end
+
+        sim.partProperty(part,'ctype',type1)
+        cMaker.ConfigTool.setting1Value = type1        
+    end
 end
 
 function MaticzplChipmaker.ConfigTool.SetSecond(part)
@@ -185,6 +226,16 @@ function MaticzplChipmaker.ConfigTool.SetSecond(part)
 
         cMaker.ConfigTool.setting2Value = distance
         return
+    end
+    
+    if type == elem.DEFAULT_PT_CONV then
+        local type2 = elem.DEFAULT_PT_NONE
+        if cMaker.StackEdit.selected ~= -1 then
+            type2 = sim.partProperty(cMaker.StackEdit.selected,'type')
+        end
+
+        sim.partProperty(part,'tmp',type2)
+        cMaker.ConfigTool.setting2Value = type2        
     end
 end
 
