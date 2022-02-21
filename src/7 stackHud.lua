@@ -48,13 +48,15 @@ function MaticzplChipmaker.DrawCursorDisplay()
 
     local offset = math.max(cMaker.StackEdit.stackPos - 2,0)
 
-    if #partsOnCursor ~= 0 and #partsOnCursor - offset < 1 then
-        offset = 0
+    if #partsOnCursor ~= 0 and cMaker.StackEdit.stackPos >= #partsOnCursor then
+        offset = math.max(#partsOnCursor - 6,0)
     end
 
     -- Assemble the string and inspect the stack
     for i = #partsOnCursor -  offset, 1, -1 do     
         local part = partsOnCursor[i]
+
+        cMaker.currentStackSize = #partsOnCursor
 
         if #partsOnCursor - i - offset > 5 then
             skipped = skipped + 1

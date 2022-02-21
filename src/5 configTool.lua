@@ -198,7 +198,7 @@ function MaticzplChipmaker.ConfigTool.SetFirst(part)
             type1 = sim.partProperty(cMaker.StackEdit.selected,'type')
         end
 
-        sim.partProperty(part,'ctype',type1)
+        sim.partProperty(part,'tmp',type1)
         cMaker.ConfigTool.setting1Value = type1        
     end
 end
@@ -234,7 +234,7 @@ function MaticzplChipmaker.ConfigTool.SetSecond(part)
             type2 = sim.partProperty(cMaker.StackEdit.selected,'type')
         end
 
-        sim.partProperty(part,'tmp',type2)
+        sim.partProperty(part,'ctype',type2)
         cMaker.ConfigTool.setting2Value = type2        
     end
 end

@@ -9,7 +9,7 @@
 -- Choose property in stack edit - Left / Right Arrows
 -- Set property value in stack edit - Enter
 -- Change position in stack display - PageUp / PageDown
--- Reset position in stack display - Home
+-- Go to beggining / end in stack display - Home / End
 -- Open Options - Shift + F1
 -- Reorder Particles - Shift + F5
 
@@ -65,6 +65,7 @@ MaticzplChipmaker =
         cursorDisplayBgAlpha = 190,
         unstackHeight = 50,
     },
+    currentStackSize = 0,
     SegmentedLine = {},
     replaceMode = false,
     propTable = {'ctype','temp','life','tmp','tmp2','pavg0','pavg1'}

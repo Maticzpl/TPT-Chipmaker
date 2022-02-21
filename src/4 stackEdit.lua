@@ -92,6 +92,10 @@ local function StackEditInit()
                 cMaker.StackEdit.stackPos = 0
                 return false
             end  
+            if key == 1073741901 and not shift and not ctrl and not alt and not _repeat then    -- End        
+                cMaker.StackEdit.stackPos = math.max(cMaker.currentStackSize - 1,0)
+                return false
+            end  
             if cMaker.StackEdit.isInStackEditMode then                 
                 if key == 1073741903 and not shift and not ctrl and not alt and not _repeat then --Right arrow
                     cMaker.StackEdit.selectedField = cMaker.StackEdit.selectedField + 1
