@@ -10,6 +10,7 @@
 -- Set property value in stack edit - Enter
 -- Change position in stack display - PageUp / PageDown
 -- Go to beggining / end in stack display - Home / End
+-- Toggle Zoom Overlay - CTRL + O
 -- Open Options - Shift + F1
 -- Reorder Particles - Shift + F5
 
@@ -59,6 +60,9 @@ MaticzplChipmaker =
         movement = {x = 0,y = 0},
         mouseDown = false,
         isDragging = false,
+    },
+    ZoomOverlay = {       
+        CallbackList = {}
     },
     CursorPos = {x = 0, y = 0},
     Settings = {
