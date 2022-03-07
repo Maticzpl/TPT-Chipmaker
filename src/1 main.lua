@@ -18,9 +18,8 @@
 -- Stack HUD - displays the elements of a stack, shows info like FILT ctype in hexadecimal etc. Types are colored!
 -- Stack navigation and editing - allows to look through very large stacks and edit particles in the middle of one
 -- Stack Tool - stacks all the particles inside of a specified rectangle into one place AND unstacks already stacked particles
-
--- Planned Features:
--- More customization in the settings
+-- Config Tool - Easiely set properties of DRAY CRAY CONV LDTC LSNS and other particles
+-- Zoom Overlay - See the particle ctypes in the zoom window
 
 if MaticzplChipmaker then return end
 

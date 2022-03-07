@@ -41,7 +41,7 @@ cMaker.RegisterZoomOverlayCallback(function (id, x, y, zx, zy, zs)
     local typeBlacklist = {elem.DEFAULT_PT_BRAY,elem.DEFAULT_PT_WWLD,elem.DEFAULT_PT_FILT,elem.DEFAULT_PT_PHOT,elem.DEFAULT_PT_BIZR,elem.DEFAULT_PT_BIZG,elem.DEFAULT_PT_BIZS,elem.DEFAULT_PT_LITH}
     
     local includes = false
-    for i, bltype in ipairs(typeBlacklist) do
+    for _, bltype in pairs(typeBlacklist) do
         if bltype == type then
             includes = true
         end

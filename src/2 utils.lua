@@ -154,7 +154,7 @@ function MaticzplChipmaker.DrawLine(x1, y1, x2, y2, r,g,b,a,adjust)
     local xDiff = math.max((x1 - x2),(x2 - x1))
     local yDiff = math.max((y1 - y2),(y2 - y1))
     local length = math.sqrt((xDiff*xDiff) + (yDiff*yDiff))
-    length = length * 2 -- for accuracy
+    length = length * 4 -- for accuracy
 
     local ex, ey, scale, size = ren.zoomWindow()
     for step = 0, 1, 1/length do
@@ -420,12 +420,12 @@ function MaticzplChipmaker.SegmentedLine:draw(x,y)
         local length = segment.length
         local lineEnd = cMaker.GetEndInDirection(self.direction,x,y,length)
 
-        cMaker.DrawLine(x+0.5,y+0.5,lineEnd.x+0.5,lineEnd.y+0.5,r,g,b,self.alpha)
+        if length >= 0 then
+            cMaker.DrawLine(x+0.5,y+0.5,lineEnd.x+0.5,lineEnd.y+0.5,r,g,b,self.alpha)            
+        end
 
         local nextLineStart = cMaker.GetEndInDirection(self.direction,lineEnd.x,lineEnd.y,1)
         x = nextLineStart.x
         y = nextLineStart.y
     end
 end
-
-MaticzplChipmaker.SegmentedLine:new(1):addSegment()

@@ -56,6 +56,8 @@ function MaticzplChipmaker.ConfigTool.CheckUsefulNeighbors(direction,x,y,type)
 end
 
 function MaticzplChipmaker.ConfigTool.DrawPartConfig(part,overwriteDirection)  
+    local sourceCol = {r=255,g=255,b=255}
+
     local type = sim.partProperty(part,'type')
     local x, y = sim.partPosition(part)
     
@@ -63,7 +65,7 @@ function MaticzplChipmaker.ConfigTool.DrawPartConfig(part,overwriteDirection)
         local r = sim.partProperty(part,'tmp2')
         
         MaticzplChipmaker.DrawRect(x-r,y-r,x+r,y+r, 0, 255, 0, cMaker.ConfigTool.overlayAlpha);
-        cMaker.DrawLine(x,y,x,y,255,255,255,255)
+        cMaker.DrawLine(x,y,x,y,sourceCol.r,sourceCol.g,sourceCol.b,cMaker.ConfigTool.overlayAlpha)
         return
     end
 
@@ -86,13 +88,12 @@ function MaticzplChipmaker.ConfigTool.DrawPartConfig(part,overwriteDirection)
             end
             if cMaker.ConfigTool.CheckUsefulNeighbors(opposite,x,y,type) or overwriteDirection ~= nil then     
                 local line = cMaker.SegmentedLine:new(d,cMaker.ConfigTool.overlayAlpha)
-                line:addSegment(255,255,255,1    )          
+                line:addSegment(sourceCol.r,sourceCol.g,sourceCol.b,1    )          
                 line:addSegment(255,0,  0,  skip )          
-                line:addSegment(0,  255,0,  range)
+                line:addSegment(0,255,255,  range)
                 line:draw(x,y)          
             end
         end
-        cMaker.DrawLine(x,y,x,y,255,255,255,255)
         return
     end
 
@@ -110,14 +111,13 @@ function MaticzplChipmaker.ConfigTool.DrawPartConfig(part,overwriteDirection)
             end
             if cMaker.ConfigTool.CheckUsefulNeighbors(opposite,x,y,type) or overwriteDirection ~= nil then  
                 local line = cMaker.SegmentedLine:new(d,cMaker.ConfigTool.overlayAlpha)
-                line:addSegment(255,255,255,1    )           
+                line:addSegment(sourceCol.r,sourceCol.g,sourceCol.b,1    )           
                 line:addSegment(0,  255,0,  range)      
-                line:addSegment(255,0,  0,  skip )          
-                line:addSegment(0,  255,0,  range)
+                line:addSegment(255,0,  255,  skip )          
+                line:addSegment(0,255,255,  range)
                 line:draw(x,y)   
             end
         end
-        cMaker.DrawLine(x,y,x,y,255,255,255,255)
         return
     end
 
