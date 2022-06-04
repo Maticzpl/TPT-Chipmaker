@@ -292,8 +292,8 @@ function MaticzplChipmaker.ReorderParticles()
                 sim.partProperty(id,'ctype',part.ctype);
                 sim.partProperty(id,'tmp',part.tmp);
                 sim.partProperty(id,'tmp2',part.tmp2);
-                sim.partProperty(id,'pavg0',part.tmp3);
-                sim.partProperty(id,'pavg1',part.tmp4);
+                sim.partProperty(id,cMaker.tmp3name,part.tmp3);
+                sim.partProperty(id,cMaker.tmp4name,part.tmp4);
                 sim.partProperty(id,'life',part.life);
                 sim.partProperty(id,'vx',part.vx);
                 sim.partProperty(id,'vy',part.vy);
@@ -428,4 +428,13 @@ function MaticzplChipmaker.SegmentedLine:draw(x,y)
         x = nextLineStart.x
         y = nextLineStart.y
     end
+end
+
+function table:includes(element)
+    for i, elem in ipairs(self) do
+        if elem == element then
+            return true
+        end
+    end
+    return false
 end

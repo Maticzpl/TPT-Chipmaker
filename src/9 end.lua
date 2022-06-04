@@ -14,6 +14,18 @@ function MaticzplChipmaker.Init()
 
     tpt.setdebug(bit.bor(0x8, 0x4))
 
+    -- Test tmp3/4 or pavg0/1 detection
+    local part = sim.partCreate(-3,4,4,1)
+    pcall(sim.partProperty, part, "tmp3", 2138)
+    local _, res = pcall(sim.partProperty, part, "tmp3")
+    sim.partKill(part)
+    if res == 2138 then
+        MaticzplChipmaker.tmp3name = "tmp3"
+        MaticzplChipmaker.tmp4name = "tmp4"
+    else
+        MaticzplChipmaker.tmp3name = "pavg0"
+        MaticzplChipmaker.tmp4name = "pavg1"        
+    end
 
     local MANAGER = rawget(_G, "MANAGER")    
 

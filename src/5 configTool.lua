@@ -61,7 +61,7 @@ function MaticzplChipmaker.ConfigTool.DrawPartConfig(part,overwriteDirection)
     local type = sim.partProperty(part,'type')
     local x, y = sim.partPosition(part)
     
-    if type == elem.DEFAULT_PT_DTEC or type == elem.DEFAULT_PT_TSNS or type == elem.DEFAULT_PT_LSNS then
+    if table.includes(cMaker.ConfigTool.radiusParts,type) then
         local r = sim.partProperty(part,'tmp2')
         
         MaticzplChipmaker.DrawRect(x-r,y-r,x+r,y+r, 0, 255, 0, cMaker.ConfigTool.overlayAlpha);
@@ -159,7 +159,7 @@ function MaticzplChipmaker.ConfigTool.SetFirst(part)
     local type = sim.partProperty(part,'type')
     local x, y = sim.partPosition(part)
     
-    if type == elem.DEFAULT_PT_DTEC or type == elem.DEFAULT_PT_TSNS or type == elem.DEFAULT_PT_LSNS then
+    if table.includes(cMaker.ConfigTool.radiusParts,type) then
         --local distance = math.floor(math.sqrt(((x-cx)*(x-cx)) + ((y-cy)*(y-cy)))) --No, its a square xd
         local distance = math.abs(math.max(math.max(x - cx,cx - x), math.max(y - cy, cy - y)))
                      
@@ -303,7 +303,8 @@ local function ConfigToolInit()
                 end
                 if cMaker.ConfigTool.isSetting2 then
                     local type = sim.partProperty(target,'type')
-                    if type == elem.DEFAULT_PT_DTEC or type == elem.DEFAULT_PT_TSNS or type == elem.DEFAULT_PT_LSNS then 
+                                                           
+                    if table.includes(cMaker.ConfigTool.radiusParts,type) then 
                         cMaker.DisableAllModes() 
                         return                                  
                     end

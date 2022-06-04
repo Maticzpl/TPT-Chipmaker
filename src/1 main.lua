@@ -51,6 +51,7 @@ MaticzplChipmaker =
         target = -1,
         mouseHeld = false,
         overlayAlpha = 150,
+        radiusParts = {elem.DEFAULT_PT_DTEC, elem.DEFAULT_PT_TSNS, elem.DEFAULT_PT_LSNS, elem.DEFAULT_PT_VSNS}
     },
     MoveTool = {
         isInMoveMode = false,
@@ -71,6 +72,8 @@ MaticzplChipmaker =
     currentStackSize = 0,
     SegmentedLine = {},
     replaceMode = false,
+    tmp3name = "tmp3",
+    tmp4name = "tmp4",
     propTable = {'ctype','temp','life','tmp','tmp2','pavg0','pavg1'}
 }
 local cMaker = MaticzplChipmaker
@@ -151,7 +154,6 @@ function MaticzplChipmaker.openSettings()
         end
     )
     window:addComponent(CDBgSlider)
-
 
     interface.showWindow(window)
 end

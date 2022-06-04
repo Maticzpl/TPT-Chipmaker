@@ -67,7 +67,7 @@ function MaticzplChipmaker.DrawCursorDisplay()
             local life = sim.partProperty(part,"life")
             local tmp = sim.partProperty(part,"tmp")
             local tmp2 = sim.partProperty(part,"tmp2")
-            local tmp4 = sim.partProperty(part,"pavg1")
+            local tmp4 = sim.partProperty(part,cMaker.tmp4name)
                         
             local strCtype = cMaker.handleCtype(ctype,type,tmp,tmp4)
             local overwriteType = strCtype.mode ~= nil
