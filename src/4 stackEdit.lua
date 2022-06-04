@@ -121,7 +121,7 @@ local function StackEditInit()
                                 val = tonumber(string.sub(val,0,#val-1)) + 273.15
                             end
                             
-                            local name = elem["DEFAULT_PT_"..val]
+                            local name = elem["DEFAULT_PT_"..string.upper(val)]
                             if name ~= nil then
                                 val = name
                             end

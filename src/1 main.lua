@@ -40,6 +40,7 @@ MaticzplChipmaker =
         mouseCaptured = false,
         mouseReleased = true,
         selectedField = 0,
+        propDesc = {}
     },
     ConfigTool = {
         inConfigMode = false,
@@ -74,7 +75,7 @@ MaticzplChipmaker =
     replaceMode = false,
     tmp3name = "tmp3",
     tmp4name = "tmp4",
-    propTable = {'ctype','temp','life','tmp','tmp2','pavg0','pavg1'}
+    propTable = {'ctype','temp','life','tmp','tmp2','tmp3','tmp4'}
 }
 local cMaker = MaticzplChipmaker
 
@@ -164,4 +165,183 @@ function MaticzplChipmaker.SaveSettings()
     MANAGER.savesetting("MaticzplCmaker","CDBgColA",sett.cursorDisplayBgAlpha)
 end
 
+--cMaker.StackEdit.propDesc[type][field]
+cMaker.StackEdit.propDesc = {
+    CRAY = {
+        ctype = "Created particle type",
+        temp = "Created particle temp",
+        life = "Created particle life",
+        tmp = "Number of parts to create",
+        tmp2 = "Distance to skip"
+    },
+    DRAY = {
+        ctype = "Element to stop copying at",
+        tmp = "Number of pixels to copy",
+        tmp2 = "Distance between source and copy"
+    },
+    ARAY = {
+        life = "Created BRAY life",
+    },
+    WIFI = {
+        temp = "WIFI channel",
+        tmp = "WIFI channel index (cannot be overwritten)",
+    },
+    TESC = {
+        tmp = "Lightning size",
+    },
+    BCLN = {
+        ctype = "Cloned element",
+    },
+    CLNE = {
+        ctype = "Cloned element",
+    },
+    PCLN = {
+        ctype = "Cloned element",
+    },
+    CONV = {
+        ctype = "Target type",
+        tmp = "Affects only particles of this type"
+    },
+    VOID = {
+        ctype = "Affects only particles of this type"
+    },
+    PRTI = {
+        temp = "Portal channel",
+        tmp = "Portal channel index (cannot be overwritten)",
+    },
+    HSWC = {
+        tmp = "1 = Deserialize FILT -> temp"
+    },
+    DLAY = {
+        temp = "Delay in frames starting from 0C"
+    },
+    STOR = {
+        ctype = "Stores only particles of this type",
+        temp = "Stored particle temp",
+        tmp2 = "Stored particle life",
+        tmp3 = "Stored particle tmp",
+        tmp4 = "Stored particle ctype",
+    },
+    PVOD = {
+        ctype = "Affects only particles of this type",
+    },
+    PUMP = {
+        temp = "Emmited pressure",
+        tmp = "1 = Deserialize FILT -> pressure"
+    },
+    PBCL = {
+        ctype = "Cloned element",
+    },
+    GPMP = {
+        temp = "Force of gravity",
+    },
+    INVS = {
+        tmp = "Pressure to open at",
+    },
+    DTEC = {
+        ctype = "Detected type",
+        tmp2 = "Detection radius",        
+    },
+    TSNS = {
+        temp = "Temperature detection threshold",
+        tmp = "1 = Serialize temp -> FILT\n2 = Detects lower temp than self",
+        tmp2 = "Detection radius",        
+    },
+    PSNS = {
+        temp = "Pressure detection threshold",
+        tmp = "1 = Serialize pressure -> FILT\n2 = Detects lower pressure",
+        tmp2 = "Detection radius",        
+    },
+    LSNS = {
+        temp = "Life detection threshold",
+        tmp = "1 = Serialize life -> FILT\n2 = Detects lower life\n3 = Deserialize FILT -> life",
+        tmp2 = "Detection radius",        
+    },
+    LDTC = {
+        ctype = "Detected type",
+        tmp = "Detection range",
+        life = "Pixels to skip before detecting",
+        tmp2 = "This property is a flag\nUse bitwise OR to set multiple modes\n1 = Detects everything but its ctype\n2 = Ignore energy particles\n4 = Don't set FILT color\n8 = Keep searching after finding a particle",
+    },
+    VSNS = {
+        temp = "Velocity detection threshold",
+        tmp = "1 = Serialize velocity -> FILT\n2 = Detects lower velocity\n3 = Deserialize FILT -> velocity",
+        tmp2 = "Detection radius",        
+    },
+    ACEL = {
+        life = "Velocity multiplier / 100 + 1"
+    },
+    DCEL = {
+        life = "Percent velocity decrease"
+    },
+    FRAY = {
+        temp = "Added / decreased velocity. 10C = 1px/frame"
+    },
+    RPEL = {
+        ctype = "Affected particle",
+        temp = "Used force. Can be negative"
+    },
+    PSTN = {
+        ctype = "Blocked by element of this type",
+        temp = "Extension distance 1px every 10C",
+        tmp = "Max ammount of particles it can push",
+        tmp2 = "Max extension length",
+    },
+    FRME = {
+        tmp = "0 = Sticky, otherwise not sticky"
+    },
+    FIRW = {
+        tmp = "1 = Ignited",
+        life = "Fuse timer",
+    },
+    FWRK = {
+        life = "Fuse timer",
+    },    
+    LITH = {
+        ctype = "Charge",
+        tmp = "Hydrogenation factor (impurity)",
+        tmp2 = "Carbonation factor (impurity)",
+    },
+    LAVA = {
+        ctype = "Molten element type"
+    },
+    GEL = {
+        tmp = "Ammount of water absorbed"
+    },
+    VIRS = {
+        tmp3 = "Frames until cured",
+        tmp4 = "Frames until death",        
+    },
+    SNOW = {
+        ctype = "Element it turns into after melting",
+    },
+    ICE = {
+        ctype = "Element it turns into after melting",
+    },
+    SPNG = {
+        life = "Ammount of water absorbed",
+    },
+    FILT = {
+        ctype = "Spectrum containing 30 bits of data",
+        tmp = "Operation 0 = SET, 1 = AND, 2 = OR, 3 = SUB\n4 = RED SHIFT, 5 = BLUE SHIFT, 6 = NONE\n7 = XOR, 8 = NOT, 9 = QRTZ\n10 = VARIABLE RED SHIFT, 101= VARIABLE BLUE SHIFT"
+    },
+    PHOT = {
+        ctype = "Spectrum containing 30 bits of data",
+    },
+    DEUT = {
+        life = "Level of compression",
+    },
+    SIGN = {
+        tmp = "Explosion power",
+        life = "Explosion timer",
+    },
+    VIBR = {
+        tmp = "Absorbed power",
+        life = "Explosion timer",
+    },
+    BVBR = {
+        tmp = "Absorbed power",
+        life = "Explosion timer",
+    },
 
+}

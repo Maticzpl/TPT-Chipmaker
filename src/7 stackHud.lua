@@ -1,4 +1,6 @@
 -- v[STACK HUD]v
+local cMaker = MaticzplChipmaker
+
 function MaticzplChipmaker.alignToRight(text)
     local maxWidth = 0
     local outStr = ""
@@ -120,11 +122,20 @@ function MaticzplChipmaker.DrawCursorDisplay()
         partsString = partsString .. "And "..skipped.." more "
     end
 
-    if cMaker.StackEdit.selectedField > 0 then
+    if cMaker.StackEdit.selectedField > 0 and cMaker.StackEdit.selected ~= -1 then
         local field = cMaker.propTable[cMaker.StackEdit.selectedField]
         local value = sim.partProperty(cMaker.StackEdit.selected,field)
+        local typeName = elements.property(sim.partProperty(cMaker.StackEdit.selected,"type"),"Name")
         if value ~= nil then
-            partsString = partsString .. "\btProp Edit: ["..field..': '..value..']\bg\n'
+            local descProps = cMaker.StackEdit.propDesc[typeName]
+            local description = ""
+            if descProps then
+                description = descProps[field] or ""
+            end
+            if field == "temp" then
+                value = (math.floor((value - 273.145) * 100) / 100).."C"
+            end
+            partsString = partsString .. "\btProp Edit: ["..field..': '..value..']\n'..description..'\bg\n'
         end
     end
 
