@@ -251,8 +251,8 @@ function MaticzplChipmaker.ReorderParticles()
     local particles = {}
     local width = sim.XRES
     for part in sim.parts() do
-        local x = math.floor(sim.partProperty(part,'x'));
-        local y = math.floor(sim.partProperty(part,'y'));
+        local x = math.floor(sim.partProperty(part,'x')+0.5);
+        local y = math.floor(sim.partProperty(part,'y')+0.5);
 
         local particleData = {}
         particleData.type =     sim.partProperty(part,'type');
@@ -260,8 +260,8 @@ function MaticzplChipmaker.ReorderParticles()
         particleData.ctype =    sim.partProperty(part,'ctype');
         particleData.tmp =      sim.partProperty(part,'tmp');
         particleData.tmp2 =     sim.partProperty(part,'tmp2');
-        particleData.tmp3 =     sim.partProperty(part,'pavg0');
-        particleData.tmp4 =     sim.partProperty(part,'pavg1');
+        particleData.tmp3 =     sim.partProperty(part,cMaker.tmp3name);
+        particleData.tmp4 =     sim.partProperty(part,cMaker.tmp4name);
         particleData.life =     sim.partProperty(part,'life');
         particleData.vx =       sim.partProperty(part,'vx');
         particleData.vy =       sim.partProperty(part,'vy');
@@ -276,7 +276,7 @@ function MaticzplChipmaker.ReorderParticles()
         --particles[index][#particles[index]] = particleData  
         sim.partKill(part)     
     end
-
+    
     for i = sim.XRES * sim.YRES, 0, -1 do
         local stack = particles[i]
         if stack ~= nil then

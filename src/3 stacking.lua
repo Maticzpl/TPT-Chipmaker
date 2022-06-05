@@ -32,6 +32,7 @@ function MaticzplChipmaker.StackTool.Stack()
         print("Warning: More than 5 particles stacked")
         tpt.set_pause(1)
     end
+    cMaker.ReorderParticles()
     
 end
 

@@ -20,6 +20,7 @@
 -- Stack Tool - stacks all the particles inside of a specified rectangle into one place AND unstacks already stacked particles
 -- Config Tool - Easiely set properties of DRAY CRAY CONV LDTC LSNS and other particles
 -- Zoom Overlay - See the particle ctypes in the zoom window
+-- Property Labels - Many properties of many elements now are documented when stack edit mode is enabled
 
 if MaticzplChipmaker then return end
 
@@ -64,6 +65,9 @@ MaticzplChipmaker =
     },
     ZoomOverlay = {       
         CallbackList = {}
+    },
+    FollowUpdate = {
+        currentID = -1
     },
     CursorPos = {x = 0, y = 0},
     Settings = {
