@@ -274,7 +274,15 @@ function MaticzplChipmaker.handleCtype(ctype,type,tmp,tmp4)
     local typeId = elements["DEFAULT_PT_"..type]
 
     if type == "PHOT" or type == "BIZR" or type == "BIZS" or type == "BIZG" or type == "BRAY" or type == "C-5" then
-        return "(0x"..string.upper(string.format("%x", ctype)) ..")"
+        if cMaker.spectrumFormat == 0 then
+            return "(0x"..string.upper(string.format("%x", ctype)) ..")"
+        end
+        if cMaker.spectrumFormat == 1 then
+            return "("..string.upper(ctype) ..")"            
+        end
+        if cMaker.spectrumFormat == 2 then
+            return "("..string.upper(bit.band(0x1FFFFFFF,ctype)) ..")"   
+        end
     end   
 
     if type == "PIPE" or type == "PPIP" then
