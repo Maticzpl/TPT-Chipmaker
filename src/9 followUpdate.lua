@@ -5,6 +5,19 @@ function MaticzplChipmaker.FollowUpdate.TryFollow()
         local x, y, size = ren.zoomScope()
         local x, y = sim.partPosition(cMaker.FollowUpdate.currentID)
         
+        if x + size / 2 > sim.XRES then
+            x = math.floor(sim.XRES - size / 2)
+        end
+        if y + size / 2 > sim.YRES then
+            y = math.floor(sim.YRES - size / 2)
+        end
+        if x - size / 2 < 0 then
+            x = math.ceil(size / 2)
+        end
+        if y - size / 2 < 0 then
+            y = math.ceil(size / 2)
+        end
+
         ren.zoomScope(x - size / 2, y - size / 2, size)
         local wx, wy, zoomFactor, wsize = ren.zoomWindow()
         if x > 305 then

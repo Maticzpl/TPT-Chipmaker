@@ -326,7 +326,15 @@ function MaticzplChipmaker.handleCtype(ctype,type,tmp,tmp4)
 
     if type == "FILT" then
         local mode = cMaker.tmpToFiltMode(tmp)
-        return "("..mode..", 0x"..string.upper(string.format("%x", ctype)) ..")"
+        if cMaker.spectrumFormat == 0 then
+            return "("..mode..", 0x"..string.upper(string.format("%x", ctype)) ..")"
+        end
+        if cMaker.spectrumFormat == 1 then
+            return "("..mode..", "..string.upper(ctype) ..")"            
+        end
+        if cMaker.spectrumFormat == 2 then
+            return "("..mode..", "..string.upper(bit.band(0x1FFFFFFF,ctype)) ..")"   
+        end
     end
     
     if type == "CLNE" or  type == "BCLN" or type == "PCLN" or type == "PBCN" then
@@ -380,4 +388,15 @@ function MaticzplChipmaker.handleTmp(tmp,type)
     
     return tmp    
 end
+
+event.register(event.keypress, function (key, scan, rep, shift, ctrl, alt)
+    -- CTRL + U to switch mode
+    if key == 117 and ctrl and not shift and not alt and not rep then
+        cMaker.spectrumFormat = (cMaker.spectrumFormat + 1) % 3
+        local modeNames = {"Hexadecimal", "Decimal with 30th bit", "Decimal without 30th bit"}
+        print("Spectrum format: "..modeNames[cMaker.spectrumFormat + 1])
+        return false
+    end
+end)
+
 -- ^[STACK HUD]^

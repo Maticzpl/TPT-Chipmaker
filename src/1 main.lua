@@ -11,8 +11,9 @@
 -- Change position in stack display - PageUp / PageDown
 -- Go to beggining / end in stack display - Home / End
 -- Toggle Zoom Overlay - CTRL + O
--- Open Options - Shift + F1
--- Reorder Particles - Shift + F5
+-- Open Options - SHIFT + F1
+-- Reorder Particles - SHIFT + F5
+-- HUD Spectrum Format - CTRL + U
 
 -- Features:
 -- Stack HUD - displays the elements of a stack, shows info like FILT ctype in hexadecimal etc. Types are colored!
@@ -74,6 +75,7 @@ MaticzplChipmaker =
         cursorDisplayBgAlpha = 190,
         unstackHeight = 50,
     },
+    spectrumFormat = 0,
     currentStackSize = 0,
     SegmentedLine = {},
     replaceMode = false,
