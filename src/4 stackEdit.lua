@@ -77,12 +77,12 @@ local function StackEditInit()
                 cMaker.StackEdit.EnableStackEditMode()
                 return false
             end
-             
-            if key == 1073741899 and not shift and not ctrl and not alt then    -- PageUp
+            local editing = cMaker.StackEdit.isInStackEditMode;
+            if (key == 1073741899 or (key == 0x40000052 and editing)) and not shift and not ctrl and not alt then    -- PageUp / Up arrow
                 cMaker.StackEdit.stackPos = cMaker.StackEdit.stackPos + 1
                 return false
             end
-            if key == 1073741902 and not shift and not ctrl and not alt then    -- PageDown        
+            if (key == 1073741902 or (key == 0x40000051 and editing)) and not shift and not ctrl and not alt then    -- PageDown / Down arrow       
                 if cMaker.StackEdit.stackPos > 0 then
                     cMaker.StackEdit.stackPos = cMaker.StackEdit.stackPos - 1
                     return false
@@ -154,6 +154,7 @@ local function StackEditInit()
         function ()                         
             if cMaker.StackEdit.isInStackEditMode then
                 cMaker.DrawModeText("Stack Edit Mode (ESC to cancel)")
+                cMaker.ConfigTool.DrawPartConfig(cMaker.StackEdit.selected)
             end    
         end
     )

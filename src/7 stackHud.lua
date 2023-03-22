@@ -163,7 +163,7 @@ function MaticzplChipmaker.DrawCursorDisplay()
 
     local zx,zy,s = ren.zoomScope()
     local zwx,zwy,zfactor,zsize = ren.zoomWindow();
-    if iscrackmod == 6 then  -- Cracker's mod
+    if iscrackmod then  -- Cracker's mod
         textPos = {
             x = 9,
             y=50

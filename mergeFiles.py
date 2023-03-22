@@ -1,10 +1,12 @@
+#!/bin/python
+
 from os import listdir
 from os.path import isfile, join, isdir
-import shutil
 
 
 def listFilesInDirRecursive(dirName):
     fileList = listdir(dirName)
+    fileList.sort()
     out = list()
 
     for entry in fileList:
@@ -33,6 +35,3 @@ finalFile.write(combinedStr)
 finalFile.truncate()
   
 finalFile.close()
-
-# 
-shutil.copy2('./Lua Chipmaker.lua', 'C:/Users/czern/AppData/Roaming/The Powder Toy/scripts/LuaChipmaker.lua') # complete target filename given

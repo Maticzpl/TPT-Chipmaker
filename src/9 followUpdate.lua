@@ -53,9 +53,11 @@ function MaticzplChipmaker.FollowUpdate.FindNextPart(id)
 end
 
 event.register(event.keypress,function (key,scan,rep,shift,ctrl,alt)
+    -- space or f
     if key == 32 and not rep or key == 102 and not shift and not alt and not rep then
         cMaker.FollowUpdate.currentID = -1
     end
+    -- alt f
     if key == 102 and alt and not rep then
         if cMaker.FollowUpdate.currentID == -1 then
             cMaker.ReorderParticles();
@@ -65,6 +67,7 @@ event.register(event.keypress,function (key,scan,rep,shift,ctrl,alt)
 
         MaticzplChipmaker.FollowUpdate.TryFollow()
     end
+    -- shift f
     if key == 102 and shift and not alt and not rep then
         if cMaker.FollowUpdate.currentID == -1 then
             cMaker.ReorderParticles();
@@ -77,12 +80,14 @@ event.register(event.keypress,function (key,scan,rep,shift,ctrl,alt)
         else
             cMaker.FollowUpdate.currentID = newID
         end    
+        MaticzplChipmaker.FollowUpdate.TryFollow()
     end
 end)
 
 event.register(event.tick,function ()
     if cMaker.FollowUpdate.currentID ~= -1 and ren.zoomEnabled() then
         local x, y = sim.partPosition(cMaker.FollowUpdate.currentID)
+        
         cMaker.DrawRect(x,y,x,y,255,255,255,100)
     end    
 end)

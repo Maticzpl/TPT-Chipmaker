@@ -1,14 +1,12 @@
 
-tpt_intelisense.lua
+inteli.lua
 
 Lua Chipmaker.lua
-
-scripts.lnk
 
 The Powder Toy.lnk
 
 demo images/
 
-tpt.lnk
-
 .vscode/
+
+TPT Chipmaker.code-workspace
