@@ -285,9 +285,9 @@ function MaticzplChipmaker.ReorderParticles()
                 local x = math.floor(i % sim.XRES)
                 local y = math.floor((i - x) / sim.XRES)
 
-                local id = sim.partCreate(-3,x,y,28)
+                local id = sim.partCreate(-3,x,y,part.type)
 
-                sim.partProperty(id,'type',part.type);
+                sim.partProperty(id,'type',part.type); -- Jacob1's mod had troubles with this :P
                 sim.partProperty(id,'temp',part.temp);
                 sim.partProperty(id,'ctype',part.ctype);
                 sim.partProperty(id,'tmp',part.tmp);

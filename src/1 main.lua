@@ -329,7 +329,7 @@ cMaker.StackEdit.propDesc = {
     },
     FILT = {
         ctype = "Spectrum containing 30 bits of data",
-        tmp = "Operation 0 = SET, 1 = AND, 2 = OR, 3 = SUB\n4 = RED SHIFT, 5 = BLUE SHIFT, 6 = NONE\n7 = XOR, 8 = NOT, 9 = QRTZ\n10 = VARIABLE RED SHIFT, 101= VARIABLE BLUE SHIFT"
+        tmp = "Operation 0 = SET, 1 = AND, 2 = OR, 3 = SUB\n4 = RED SHIFT, 5 = BLUE SHIFT, 6 = NONE\n7 = XOR, 8 = NOT, 9 = QRTZ\n10 = VARIABLE RED SHIFT, 11= VARIABLE BLUE SHIFT"
     },
     PHOT = {
         ctype = "Spectrum containing 30 bits of data",
