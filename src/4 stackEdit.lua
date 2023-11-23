@@ -70,6 +70,42 @@ function MaticzplChipmaker.StackEdit.DisableStackEditMode()
     cMaker.StackEdit.isInStackEditMode = false                
 end
 
+function MaticzplChipmaker.StackEdit.SetFieldValue(field, wrong)
+	wrong = wrong or false
+
+	local function applyValue(field_name, val)
+		if string.sub(val, #val) == "C" then
+			val = tonumber(string.sub(val, 0, #val-1)) + 273.15
+		end
+
+		local name = elem["DEFAULT_PT_"..string.upper(val)]
+		if name ~= nil then
+			val = name
+		end
+
+		local success, _ = pcall(sim.partProperty, cMaker.StackEdit.selected, field_name, val)
+
+		if not success then
+			cMaker.StackEdit.SetFieldValue(field_name, true)
+		end
+	end
+
+	local title = "Set Property"
+
+	if wrong then
+		title = "Wrong value! Try again."
+	end
+
+	if tpt.input then
+		applyValue(field, tpt.input(title, "Set value for "..field))
+	else
+		interface.beginInput(title, "Set value for ".. field, "", "", function (val)
+			applyValue(field, val)
+		end) 
+	end
+
+end
+
 local function StackEditInit()
     event.register(event.keypress, 
         function (key,scan,_repeat,shift,ctrl,alt)
@@ -115,24 +151,8 @@ local function StackEditInit()
                     if cMaker.StackEdit.selectedField > 0 then
                         local field = cMaker.propTable[cMaker.StackEdit.selectedField]
                         sim.takeSnapshot()
-                        while true do                            
-                            local val = tpt.input("Set Property","Set value for "..field)
-                            if string.sub(val,#val) == "C" then
-                                val = tonumber(string.sub(val,0,#val-1)) + 273.15
-                            end
-                            
-                            local name = elem["DEFAULT_PT_"..string.upper(val)]
-                            if name ~= nil then
-                                val = name
-                            end
 
-                            local success, val = pcall(sim.partProperty,cMaker.StackEdit.selected,field,val)
-                            if success then
-                                break
-                            else
-                                tpt.confirm("Wrong value","This property doesnt accept this value")
-                            end
-                        end
+						cMaker.StackEdit.SetFieldValue(field)
                     end
                     return false
                 end
