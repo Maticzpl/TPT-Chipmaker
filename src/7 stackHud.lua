@@ -269,6 +269,17 @@ function MaticzplChipmaker.ctypeToGol(ctype) --TODO: Implement this
     return name, color
 end
 
+function MaticzplChipmaker.toBits(num,bits)
+    bits = bits or math.max(1, select(2, math.frexp(num)))
+    local t = {}      
+    for b = bits, 1, -1 do
+        t[b] = math.fmod(num, 2)
+        num = math.floor((num - t[b]) / 2)
+    end
+    return t
+end
+
+
 function MaticzplChipmaker.handleCtype(ctype,type,tmp,tmp4)
     local isCtypeNamed,ctypeName = pcall(elements.property,ctype,"Name")
     local typeId = elements["DEFAULT_PT_"..type]
@@ -341,7 +352,10 @@ function MaticzplChipmaker.handleCtype(ctype,type,tmp,tmp4)
             return "("..mode..", "..string.upper(ctype) ..")"            
         end
         if cMaker.spectrumFormat == 2 then
-            return "("..mode..", "..string.upper(bit.band(0x1FFFFFFF,ctype)) ..")"   
+            return "("..mode..", "..string.upper(bit.band(0x1FFFFFFF,ctype)) ..")"
+	end
+        if cMaker.spectrumFormat == 3 then
+            return "("..mode..", "..table.concat(cMaker.toBits(ctype, 30)):gsub("....", "%1 "):gsub(":$", "") ..")"
         end
     end
     
@@ -400,8 +414,8 @@ end
 event.register(event.keypress, function (key, scan, rep, shift, ctrl, alt)
     -- CTRL + U to switch mode
     if key == 117 and ctrl and not shift and not alt and not rep then
-        cMaker.spectrumFormat = (cMaker.spectrumFormat + 1) % 3
-        local modeNames = {"Hexadecimal", "Decimal with 30th bit", "Decimal without 30th bit"}
+        cMaker.spectrumFormat = (cMaker.spectrumFormat + 1) % 4
+        local modeNames = {"Hexadecimal", "Decimal with 30th bit", "Decimal without 30th bit", "Binary"}
         print("Spectrum format: "..modeNames[cMaker.spectrumFormat + 1])
         return false
     end
