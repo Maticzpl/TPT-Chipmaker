@@ -1,5 +1,5 @@
 function MaticzplChipmaker.EveryFrame()
-    if tpt.hud() == 1 then        
+    if ren.hud() then        
         cMaker.DrawCursorDisplay()
     end
 end

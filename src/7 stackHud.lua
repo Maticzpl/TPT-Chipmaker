@@ -38,12 +38,12 @@ function MaticzplChipmaker.DrawCursorDisplay()
     cMaker.StackEdit.selected = -1
     local x,y = simulation.adjustCoords(cMaker.CursorPos.x,cMaker.CursorPos.y)
     
-    local partsOnCursor = cMaker.GetAllPartsInPos(x,y)
-
-    if #partsOnCursor < 1 then
+    if sim.partID(x, y) == nil then
         return
     end
-    
+
+    local partsOnCursor = cMaker.GetAllPartsInPos(x,y)
+
     local partsString = ""
     local skipped = 0
     local hasSpecialDisplay = false
